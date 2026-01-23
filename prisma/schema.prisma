@@ -7,6 +7,14 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ReferenceType {
+  SOCAIL_MEDIA
+  WHATSAPP_GROUP
+  PERSON
+  WEBSITE
+  MAIL
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String?
@@ -58,4 +66,56 @@ model VerificationToken {
 
 model Submissions {
   id String @id @unique @default(uuid(7))
+
+  // personal Details
+
+  name               String @unique
+  email              String @unique
+  phone              String @unique
+  whatsappNumber     String @unique
+  education          String
+  currentDesignation String
+  institute          String
+  organization       String
+  address            String
+  city               String
+  district           String
+  postalCode         String
+  state              String
+
+  // reference
+  submissionRefference  SubmissionReference @relation(fields: [submissionReferenceId], references: [id])
+  submissionReferenceId String
+
+  // payments record
+  payment   Payment @relation(fields: [paymentId], references: [id])
+  paymentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubmissionReference {
+  id                String        @id @unique @default(uuid(7))
+  type              ReferenceType
+  personName        String?
+  personDesignation String?
+  Submissions       Submissions[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+}
+
+model Payment {
+  id          String        @id @unique @default(uuid(7))
+  upiId       String        @unique
+  paymentDate DateTime
+  upiImageId  String?
+  UpiImageUrl String?
+  Submissions Submissions[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
