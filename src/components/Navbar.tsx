@@ -9,7 +9,7 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const pathname = usePathname()
-    const isHomePage = pathname === "/"
+    const isTransparentNav = pathname === "/" || pathname === "/register"
 
     const navLinks = [
         {name: "Home", href: "/#home"},
@@ -31,7 +31,7 @@ const Navbar = () => {
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
 
-    const navbarBgClass = (isHomePage && !scrolled)
+    const navbarBgClass = (isTransparentNav && !scrolled)
         ? "bg-transparent py-6"
         : "bg-green-950/95 backdrop-blur-md shadow-lg py-3"
 
