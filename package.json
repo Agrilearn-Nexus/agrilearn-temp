@@ -19,6 +19,7 @@
     "@prisma/client": "^7.3.0",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
+    "file-type": "^21.3.0",
     "inngest": "^3.49.3",
     "lucide-react": "^0.563.0",
     "next": "16.1.4",

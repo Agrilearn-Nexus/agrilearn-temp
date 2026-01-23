@@ -1,40 +1,40 @@
 import { inngest } from "@/lib/inngest";
 import { NextResponse } from "next/server";
+import crypto from "crypto";
 
 export async function POST(req: Request) {
     try {
         const formData = await req.formData();
+        const submissionId = crypto.randomUUID();
 
-        const body: Record<string, any> = {};
+        const receiptTempKey = `temp/${submissionId}`;
 
-        // Handle fields
+
+        const submissionData: Record<string, any> = {};
         formData.forEach((value, key) => {
-            if (value instanceof File) {
-                body[key] = {
-                    name: value.name,
-                    type: value.type,
-                    size: value.size,
-                };
-            } else {
-                body[key] = value;
-            }
+            if (key !== "receipt") submissionData[key] = value.toString();
         });
+
+        const paymentData = {
+            amountPaid: formData.get("amountPaid")?.toString(),
+            paymentDate: formData.get("paymentDate")?.toString(),
+            upiId: formData.get("upiId")?.toString(),
+        };
 
         await inngest.send({
-            name: "submission.created",
-            data: body,
+            name: "submission.received",
+            data: {
+                submissionId,
+                receiptTempKey,
+                submissionData,
+                paymentData,
+            },
         });
 
-        return NextResponse.json({
-            success: true,
-            queued: true,
-            message: "Submission is being processed",
-        });
-    } catch (error) {
-        console.error("API Error:", error);
-        return NextResponse.json(
-            { success: false, message: "Internal Server Error" },
-            { status: 500 }
-        );
+        return NextResponse.json({ success: true, queued: true });
+
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ success: false }, { status: 500 });
     }
 }

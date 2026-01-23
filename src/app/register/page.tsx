@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 import FormHeader from "@/components/form/FormHeader";
 import PersonalDetails from "@/components/form/PersonalDetails";
@@ -16,60 +17,62 @@ import ReferenceDetails from "@/components/form/ReferenceDetails";
 import FormHero from "@/components/form/FormHero";
 
 import { registerSchema, RegisterFormData } from "@/lib/schemas/register";
-import {useRouter} from "next/navigation";
 
 const RegisterPage = () => {
+    const router = useRouter(); // ✅ hook at top-level
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const methods = useForm<RegisterFormData>({
         mode: "onChange",
         resolver: zodResolver(registerSchema),
+        shouldFocusError: true,
     });
 
     const onSubmit = async (data: RegisterFormData) => {
+        if (isSubmitting) return; // ✅ double-submit protection
+
         setIsSubmitting(true);
         const toastId = toast.loading("Submitting registration...");
-    const router  = useRouter()
+
         try {
             const formData = new FormData();
 
-            (Object.keys(data) as Array<keyof RegisterFormData>).forEach((key) => {
-                if (key === "paymentReceipt") return; // Skip file for now
-                if (data[key] !== undefined && data[key] !== null) {
-                    formData.append(key, data[key] as string);
-                }
-            });
+            for (const key in data) {
+                if (key === "paymentReceipt") continue;
 
-            if (data.paymentReceipt && data.paymentReceipt[0]) {
+                const value = data[key as keyof RegisterFormData];
+                if (value !== undefined && value !== null) {
+                    formData.append(key, String(value));
+                }
+            }
+
+            if (data.paymentReceipt?.[0]) {
                 formData.append("receipt", data.paymentReceipt[0]);
             }
 
-            const response = await axios.post("/api/submit", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            });
+            const response = await axios.post("/api/submit", formData); // ✅ no manual headers
 
-            if (response.data.success) {
+            if (response?.data?.success) {
                 toast.success("Registration successful!", { id: toastId });
                 methods.reset();
-                // Optional:
                 router.push("/");
             } else {
-                throw new Error(response.data.message || "Submission failed");
+                throw new Error(response?.data?.message || "Submission failed");
             }
 
         } catch (error: any) {
             console.error("Submission Error:", error);
-            toast.error(error.response?.data?.message || "Failed to submit form", { id: toastId });
+            toast.error(
+                error?.response?.data?.message || error?.message || "Failed to submit form",
+                { id: toastId }
+            );
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const onError = (errors: any) => {
-        console.log("Validation Errors:", errors);
-        toast.error("Please check the form for errors");
+    const onError = () => {
+        toast.error("Please fix the errors in the form");
     };
 
     return (
@@ -80,7 +83,7 @@ const RegisterPage = () => {
             <div className="relative w-full min-h-screen flex flex-col">
                 <div className="absolute inset-0 z-0">
                     <Image
-                        src={`/formHeaderHero.png`}
+                        src="/formHeaderHero.png"
                         alt="Agriculture Field"
                         fill
                         priority
@@ -102,12 +105,12 @@ const RegisterPage = () => {
                     <form
                         onSubmit={methods.handleSubmit(onSubmit, onError)}
                         className="w-full"
+                        noValidate
                     >
                         <FormHeader />
 
                         <PersonalDetails />
                         <PaymentDetails />
-
                         <ReferenceDetails />
                         <WhatsappConfirmation />
 
