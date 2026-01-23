@@ -4,20 +4,20 @@ import {NextResponse} from "next/server"
 export default auth((req) => {
     const isLoggedIn = !!req.auth
 
-    const isAuthPage = req.nextUrl.pathname.startsWith("/login")
-    const isProtectedRoute = req.nextUrl.pathname.startsWith("/dashboard")
+    const isAuthPage = req.nextUrl.pathname.startsWith("/admin/auth/login")
+    const isProtectedRoute = req.nextUrl.pathname.startsWith("/admin/dashboard")
 
     if (isProtectedRoute && !isLoggedIn) {
-        return NextResponse.redirect(new URL("/login", req.nextUrl))
+        return NextResponse.redirect(new URL("/admin/auth/login", req.nextUrl))
     }
 
     if (isAuthPage && isLoggedIn) {
-        return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
+        return NextResponse.redirect(new URL("/admin/dashboard", req.nextUrl))
     }
 
     return NextResponse.next()
 })
 
 export const config = {
-    matcher: ["/dashboard/:path*", "/login"],
+    matcher: ["/admin/dashboard/:path*", "/admin/auth/login"],
 }

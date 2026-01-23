@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------
+   1. GLOBAL FONTS & SMOOTHING
+   --------------------------------------------------------- */
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply antialiased text-gray-900 bg-gray-50;
+        overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-serif;
+    }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ---------------------------------------------------------
+   2. CUSTOM SCROLLBAR (Premium Feel)
+   --------------------------------------------------------- */
+::-webkit-scrollbar {
+    width: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+::-webkit-scrollbar-track {
+    background: #ECF4EE;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+::-webkit-scrollbar-thumb {
+    background: #2E6041;
+    border-radius: 5px;
+    border: 2px solid #ECF4EE;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #16261E;
+}
+
+/* ---------------------------------------------------------
+   3. TEXT SELECTION (Brand Colors)
+   --------------------------------------------------------- */
+::selection {
+    background-color: #E8BA30;
+    color: black;
+}
+
+::-moz-selection {
+    background-color: #E8BA30;
+    color: black;
+}
+
+/* ---------------------------------------------------------
+   4. ANIMATIONS
+   --------------------------------------------------------- */
+@layer utilities {
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 }
