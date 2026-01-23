@@ -6,7 +6,7 @@ const Hero = () => {
         <div className="w-11/12 md:w-10/12 mx-auto flex flex-col items-center justify-center text-white gap-6 md:gap-8">
 
             <div
-                className="animate-fade-in-up px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 w-fit flex items-center gap-2 text-sm md:text-base font-medium shadow-lg">
+                className="animate-fade-in-up px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 w-fit flex items-center gap-2 text-sm md:text-base font-medium shadow-lg mt-8 md:mt-16">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#E8BA30] animate-pulse"></span>
                 Transforming Agriculture Through Education
             </div>

@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer";
 import Copyright from "@/components/copyright";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import React from "react";
+import PageLayout from "@/components/PageLayout";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -26,13 +26,11 @@ export default function RootLayout({
 
         <FloatingWhatsApp/>
 
-        <header className="absolute top-0 left-0 w-full z-50">
-            <Navbar/>
-        </header>
+        <Navbar/>
 
-        <div className="flex-grow flex flex-col">
+        <PageLayout>
             {children}
-        </div>
+        </PageLayout>
 
         <footer className="w-full relative z-20">
             <Footer/>
