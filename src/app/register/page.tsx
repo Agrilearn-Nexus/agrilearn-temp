@@ -1,8 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 import FormHeader from "@/components/form/FormHeader";
 import PersonalDetails from "@/components/form/PersonalDetails";
@@ -12,35 +15,69 @@ import FormFooter from "@/components/form/FormFooter";
 import ReferenceDetails from "@/components/form/ReferenceDetails";
 import FormHero from "@/components/form/FormHero";
 
-
-type FormDataType = {
-    fullName: string;
-    paymentReceipt: FileList;
-};
+import { registerSchema, RegisterFormData } from "@/lib/schemas/register";
+import {useRouter} from "next/navigation";
 
 const RegisterPage = () => {
-    const methods = useForm<FormDataType>({
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const methods = useForm<RegisterFormData>({
         mode: "onChange",
+        resolver: zodResolver(registerSchema),
     });
 
-    const onSubmit = (data: FormDataType) => {
-        console.log("Form Submitted:", data);
+    const onSubmit = async (data: RegisterFormData) => {
+        setIsSubmitting(true);
+        const toastId = toast.loading("Submitting registration...");
+    const router  = useRouter()
+        try {
+            const formData = new FormData();
 
-        const formData = new FormData();
-        formData.append("fullName", data.fullName);
+            (Object.keys(data) as Array<keyof RegisterFormData>).forEach((key) => {
+                if (key === "paymentReceipt") return; // Skip file for now
+                if (data[key] !== undefined && data[key] !== null) {
+                    formData.append(key, data[key] as string);
+                }
+            });
 
-        if (data.paymentReceipt?.[0]) {
-            formData.append("receipt", data.paymentReceipt[0]);
+            if (data.paymentReceipt && data.paymentReceipt[0]) {
+                formData.append("receipt", data.paymentReceipt[0]);
+            }
+
+            const response = await axios.post("/api/submit", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.data.success) {
+                toast.success("Registration successful!", { id: toastId });
+                methods.reset();
+                // Optional:
+                router.push("/");
+            } else {
+                throw new Error(response.data.message || "Submission failed");
+            }
+
+        } catch (error: any) {
+            console.error("Submission Error:", error);
+            toast.error(error.response?.data?.message || "Failed to submit form", { id: toastId });
+        } finally {
+            setIsSubmitting(false);
         }
+    };
 
-        // API call can go here
+    const onError = (errors: any) => {
+        console.log("Validation Errors:", errors);
+        toast.error("Please check the form for errors");
     };
 
     return (
         <>
+            <Toaster position="top-right" />
+
             {/* Hero Section */}
             <div className="relative w-full min-h-screen flex flex-col">
-                {/* Background */}
                 <div className="absolute inset-0 z-0">
                     <Image
                         src={`/formHeaderHero.png`}
@@ -52,9 +89,7 @@ const RegisterPage = () => {
                     <div className="absolute inset-0 bg-black/50" />
                 </div>
 
-                {/* Content */}
                 <div className="relative z-10 flex flex-col min-h-screen">
-
                     <div className="grow flex items-center justify-center py-12 md:py-0 px-4">
                         <FormHero />
                     </div>
@@ -65,15 +100,18 @@ const RegisterPage = () => {
             <div id="registerNow" className="bg-[#F4F3EF] w-full">
                 <FormProvider {...methods}>
                     <form
-                        onSubmit={methods.handleSubmit(onSubmit)}
+                        onSubmit={methods.handleSubmit(onSubmit, onError)}
                         className="w-full"
                     >
                         <FormHeader />
+
                         <PersonalDetails />
                         <PaymentDetails />
+
                         <ReferenceDetails />
                         <WhatsappConfirmation />
-                        <FormFooter />
+
+                        <FormFooter isDisabled={isSubmitting} />
                     </form>
                 </FormProvider>
             </div>

@@ -1,14 +1,20 @@
 "use client";
 
 import React from "react";
-import { useFormContext } from "react-hook-form";
-import { FiSend, FiRefreshCw } from "react-icons/fi";
+import {useFormContext} from "react-hook-form";
+import {FiRefreshCw, FiSend} from "react-icons/fi";
 
-const FormFooter = () => {
+interface FormFooterProps {
+    isDisabled?: boolean;
+}
+
+const FormFooter = ({isDisabled}: FormFooterProps) => {
     const {
         reset,
-        formState: { isSubmitting },
+        formState: {isSubmitting},
     } = useFormContext();
+
+    const shouldDisable = isDisabled || isSubmitting;
 
     return (
         <div className="w-full flex justify-center p-4 md:p-8">
@@ -21,20 +27,20 @@ const FormFooter = () => {
                         onClick={() => reset()}
                         className="flex-1 py-4 px-6 rounded-lg border border-gray-300 text-gray-700 font-bold hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                     >
-                        <FiRefreshCw /> Clear Form
+                        <FiRefreshCw/> Clear Form
                     </button>
 
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        disabled={isSubmitting}
-                        className="flex-[2] py-4 px-6 rounded-lg bg-[#3F7A5A] text-white font-bold text-lg hover:bg-[#2E5E42] shadow-lg shadow-green-900/20 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2 disabled:bg-gray-400"
+                        disabled={shouldDisable}
+                        className="flex-[2] py-4 px-6 rounded-lg bg-[#3F7A5A] text-white font-bold text-lg hover:bg-[#2E5E42] shadow-lg shadow-green-900/20 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none"
                     >
-                        {isSubmitting ? (
-                            "Submitting..."
+                        {shouldDisable ? (
+                            "Processing..."
                         ) : (
                             <>
-                                <FiSend /> Submit Registration
+                                <FiSend/> Submit Registration
                             </>
                         )}
                     </button>

@@ -1,17 +1,40 @@
-import { inngest } from "@/lib/inngest"
-import { NextResponse } from "next/server"
+import { inngest } from "@/lib/inngest";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-    const body = await req.json()
+    try {
+        const formData = await req.formData();
 
-    await inngest.send({
-        name: "submission.created",
-        data: body,
-    })
+        const body: Record<string, any> = {};
 
-    return NextResponse.json({
-        success: true,
-        queued: true,
-        message: "Submission is being processed",
-    })
+        // Handle fields
+        formData.forEach((value, key) => {
+            if (value instanceof File) {
+                body[key] = {
+                    name: value.name,
+                    type: value.type,
+                    size: value.size,
+                };
+            } else {
+                body[key] = value;
+            }
+        });
+
+        await inngest.send({
+            name: "submission.created",
+            data: body,
+        });
+
+        return NextResponse.json({
+            success: true,
+            queued: true,
+            message: "Submission is being processed",
+        });
+    } catch (error) {
+        console.error("API Error:", error);
+        return NextResponse.json(
+            { success: false, message: "Internal Server Error" },
+            { status: 500 }
+        );
+    }
 }
