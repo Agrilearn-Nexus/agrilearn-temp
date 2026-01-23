@@ -9,7 +9,9 @@
     "lint": "eslint",
     "prisma:migrate": "pnpm prisma migrate dev",
     "prisma:generate": "pnpm prisma generate",
-    "postinstall": "pnpm run prisma:generate"
+    "postinstall": "pnpm run prisma:generate",
+    "email": "email dev --dir src/emails",
+    "inngest": "pnpm dlx inngest-cli@latest dev"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -17,6 +19,8 @@
     "@hookform/resolvers": "^5.2.2",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
+    "@react-email/components": "^1.0.6",
+    "@react-email/render": "^2.0.4",
     "axios": "^1.13.2",
     "dotenv": "^17.2.3",
     "file-type": "^21.3.0",
@@ -24,6 +28,7 @@
     "lucide-react": "^0.563.0",
     "next": "16.1.4",
     "next-auth": "5.0.0-beta.30",
+    "nodemailer": "^7.0.12",
     "pg": "^8.17.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -33,8 +38,10 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@react-email/preview-server": "5.2.5",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^7.0.5",
     "@types/pg": "^8.16.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -42,6 +49,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "prisma": "^7.3.0",
+    "react-email": "^5.2.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

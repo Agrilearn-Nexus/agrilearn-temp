@@ -1,5 +1,6 @@
 import { inngest } from "@/lib/inngest";
-import {prisma} from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
+
 export const persistSubmission = inngest.createFunction(
     { id: "persist-submission" },
     { event: "submission.validated" },
@@ -15,9 +16,12 @@ export const persistSubmission = inngest.createFunction(
             });
         });
 
-        await step.sendEvent("submission.persisted", {
-            submissionId: record.id,
-            email: event.data.submissionData.email,
+        await step.sendEvent("emit-submission-persisted", {
+            name: "submission.persisted",
+            data: {
+                submissionId: record.id,
+                email: event.data.submissionData.email,
+            },
         });
     }
 );
