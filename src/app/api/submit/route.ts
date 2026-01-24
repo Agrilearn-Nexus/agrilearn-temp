@@ -1,4 +1,4 @@
-import { inngest } from "@/lib/inngest";
+import { inngest } from "@/inngest/client";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { saveTempFile } from "@/utils/temp-storage";

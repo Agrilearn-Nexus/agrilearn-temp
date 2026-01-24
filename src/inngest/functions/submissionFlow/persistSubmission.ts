@@ -1,4 +1,4 @@
-import { inngest } from "@/lib/inngest";
+import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/prisma";
 
 export const persistSubmission = inngest.createFunction(

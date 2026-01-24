@@ -1,89 +1,19 @@
-version: '3.9'
-
 services:
-  # ------------------------------------------------------------
-  # 1. PostgreSQL Database
-  # ------------------------------------------------------------
-  db:
-    image: postgres:15-alpine
-    container_name: agrilearn_db
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-agrilearn}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - agri_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  # ------------------------------------------------------------
-  # 2. Inngest Server (Dev)
-  # ------------------------------------------------------------
   inngest:
     image: inngest/inngest:latest
     container_name: agrilearn_inngest
-    restart: always
+    restart: unless-stopped
+    command: ["inngest", "start"]   # 🔥 REQUIRED
     ports:
-      - "8288:8288" # Dashboard accessible at http://localhost:8288
+      - "8288:8288"
     environment:
-      # Allows Inngest to accept events from our app
-      INNGEST_DEV: "1"
+      INNGEST_DEV: "0"
+      INNGEST_SIGNING_KEY: "${INNGEST_SIGNING_KEY}"
+      INNGEST_EVENT_KEY: "${INNGEST_EVENT_KEY}"
+
     networks:
       - agri_network
 
-  # ------------------------------------------------------------
-  # 3. Next.js Application
-  # ------------------------------------------------------------
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: agrilearn_web
-    restart: always
-    environment:
-      # Database Connection (uses service name 'db' instead of localhost)
-      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@db:5432/${POSTGRES_DB:-agrilearn}
-
-      # Inngest Configuration
-      INNGEST_EVENT_KEY: "local"
-      INNGEST_SIGNING_KEY: "local"
-      # Crucial: Tells the Next.js SDK to send events to the 'inngest' container
-      INNGEST_BASE_URL: "http://inngest:8288"
-
-      # Other Secrets (Add your real keys in .env)
-      AUTH_SECRET: ${AUTH_SECRET}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      # If using R2 for uploads
-      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID}
-      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
-      R2_BUCKET_NAME: ${R2_BUCKET_NAME}
-      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID}
-
-    ports:
-      - "3000:3000"
-    depends_on:
-      db:
-        condition: service_healthy
-      inngest:
-        condition: service_started
-    networks:
-      - agri_network
-
-# ------------------------------------------------------------
-# Networks & Volumes
-# ------------------------------------------------------------
 networks:
   agri_network:
     driver: bridge
-
-volumes:
-  postgres_data:

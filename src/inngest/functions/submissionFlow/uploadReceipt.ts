@@ -1,4 +1,4 @@
-import { inngest } from "@/lib/inngest";
+import { inngest } from "@/inngest/client";
 import { fileUpload } from "@/utils/operations";
 import { getTempFile, deleteTempFile } from "@/utils/temp-storage";
 

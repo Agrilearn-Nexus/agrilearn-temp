@@ -1,5 +1,5 @@
-import { inngest } from "@/lib/inngest";
 import { validateForm } from "@/lib/validators";
+import {inngest} from "@/inngest/client";
 
 export const validateSubmission = inngest.createFunction(
     { id: "validate-submission" },

@@ -1,4 +1,4 @@
-import {inngest} from "@/lib/inngest";
+import {inngest} from "@/inngest/client";
 import {sendEmail} from "@/lib/mailer";
 import SubmissionSuccessEmail from "@/emails/SubmissionSuccessEmail";
 
