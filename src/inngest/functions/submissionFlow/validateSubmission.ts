@@ -1,15 +1,31 @@
+import { inngest } from "@/inngest/client";
 import { validateForm } from "@/lib/validators";
-import {inngest} from "@/inngest/client";
 
 export const validateSubmission = inngest.createFunction(
     { id: "validate-submission" },
     { event: "file.uploaded" },
-
     async ({ event, step }) => {
-        await step.run("schema-validation", async () => {
-            validateForm(event.data.submissionData);
+
+        const validatedData = await step.run("schema-validation", async () => {
+            const { submissionData, paymentData } = event.data;
+
+            const rawData = {
+                ...submissionData,
+                ...paymentData,
+                paymentReceipt: event.data.fileUrl || event.data.paymentReceipt,
+            };
+
+            return validateForm(rawData);
         });
 
-        await step.sendEvent("submission.validated", event.data);
+        await step.sendEvent("emit-submission-validated", {
+            name: "submission.validated",
+            data: {
+                ...event.data,
+                ...validatedData
+            },
+        });
+
+        return { success: true };
     }
 );
