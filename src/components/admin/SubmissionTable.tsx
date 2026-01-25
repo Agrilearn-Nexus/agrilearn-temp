@@ -3,8 +3,8 @@
 import { useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { Search, Download, ExternalLink } from "lucide-react";
-
+import { Search, Download, ExternalLink, Trash2 } from "lucide-react";
+import { deleteSubmission } from "@/actions/admin";
 interface Submission {
     id: string;
     name: string;
@@ -41,6 +41,12 @@ export function SubmissionTable({ data }: { data: any[] }) {
     );
 
     const handleExport = () => {
+
+        if(filteredData.length === 0) {
+            alert("No submissions found to export");
+            return;
+        }
+
         const excelData = filteredData.map((item) => ({
             "Student Name": item.name,
             "Email": item.email,
@@ -151,6 +157,19 @@ export function SubmissionTable({ data }: { data: any[] }) {
                     <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
                       Received
                     </span>
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <button
+                                        onClick={async () => {
+                                            if(confirm("Are you sure you want to delete this student?")) {
+                                                await deleteSubmission(row.id);
+                                            }
+                                        }}
+                                        className="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded-full transition-colors"
+                                        title="Delete Submission"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
                                 </td>
                             </tr>
                         ))
