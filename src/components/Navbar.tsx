@@ -18,8 +18,7 @@ const Navbar = ({user}: NavbarProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const pathname = usePathname()
-    const isTransparentNav = pathname === "/" || pathname === "/register"
-
+    const isTransparentNav = pathname === "/" || pathname === "/register" || pathname === "/admin/dashboard"
     const navLinks = [
         {name: "Home", href: "/#home"},
         {name: "Services", href: "/#services"},
@@ -81,7 +80,6 @@ const Navbar = ({user}: NavbarProps) => {
 
                     <div className="flex items-center gap-4">
                         {user ? (
-                            // LOGGED IN STATE (ADMIN)
                             <>
                                 <Link href="/admin/dashboard"
                                       className="text-[16px] font-medium px-5 py-2 border border-white/30 rounded-full hover:bg-white hover:text-green-950 transition-all">

@@ -1,193 +1,176 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import { Search, Download, ExternalLink, Trash2 } from "lucide-react";
-import { deleteSubmission } from "@/actions/admin";
-interface Submission {
-    id: string;
-    name: string;
-    email: string;
-    phone?: string | null;
-    whatsappNumber?: string | null;
-    education?: string | null;
-    institute?: string | null;
-    organization?: string | null;
-    city?: string | null;
-    state?: string | null;
-    createdAt: Date;
+import {saveAs} from "file-saver";
+import {Download, Eye, Filter, Search} from "lucide-react";
+import {SubmissionDetailsModal} from "./SubmissionDetailsModal";
 
-    payment?: {
-        upiId?: string | null;
-        paymentDate?: Date | null;
-        UpiImageUrl?: string | null;
-        amountPaid?: string | null;
-    } | null;
-
-    submissionRefference?: {
-        type?: string | null;
-        personName?: string | null;
-    } | null;
-}
-
-export function SubmissionTable({ data }: { data: any[] }) {
+export function SubmissionTable({data}: { data: any[] }) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [sourceFilter, setSourceFilter] = useState("ALL");
+    const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
 
-    const filteredData = data.filter((item: Submission) =>
-        item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.phone?.includes(searchTerm)
-    );
+    const filteredData = data.filter((item) => {
+        const term = searchTerm.toLowerCase();
+        const matchesSearch =
+            item.name?.toLowerCase().includes(term) ||
+            item.email?.toLowerCase().includes(term) ||
+            item.phone?.includes(term);
+        const matchesSource = sourceFilter === "ALL" || item.submissionRefference?.type === sourceFilter;
+        return matchesSearch && matchesSource;
+    });
 
+    // Export Logic
     const handleExport = () => {
-
-        if(filteredData.length === 0) {
-            alert("No submissions found to export");
-            return;
-        }
-
         const excelData = filteredData.map((item) => ({
-            "Student Name": item.name,
-            "Email": item.email,
-            "WhatsApp": item.whatsappNumber || item.phone,
-            "Education": item.education,
-            "College": item.institute,
-            "University": item.organization,
-            "City": item.city,
-            "State": item.state,
-            "Reference Source": item.submissionRefference?.type,
-            "Referred By": item.submissionRefference?.personName || "N/A",
-            "Payment Date": item.payment?.paymentDate
-                ? new Date(item.payment.paymentDate).toLocaleDateString()
-                : "N/A",
-            "UPI ID": item.payment?.upiId || "N/A",
-            "Receipt URL": item.payment?.UpiImageUrl || "N/A",
-            "Registration Date": new Date(item.createdAt).toLocaleString(),
+            Name: item.name, Email: item.email, Phone: item.whatsappNumber,
+            College: item.institute, Payment: item.payment?.amountPaid || "0",
+            Source: item.submissionRefference?.type
         }));
-
         const worksheet = XLSX.utils.json_to_sheet(excelData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Submissions");
-
-        const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-        const dataBlob = new Blob([excelBuffer], { type: "application/octet-stream" });
-        saveAs(dataBlob, `AgriLearn_Submissions_${new Date().toISOString().split("T")[0]}.xlsx`);
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+        const excelBuffer = XLSX.write(workbook, {bookType: "xlsx", type: "array"});
+        saveAs(new Blob([excelBuffer], {type: "application/octet-stream"}), "AgriLearn_Data.xlsx");
     };
 
+    const getInitials = (name: string) => name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
+
     return (
-        <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
-            {/* Toolbar */}
-            <div className="p-4 border-b flex flex-col sm:flex-row gap-4 justify-between items-center bg-gray-50/50">
-                <div className="relative w-full sm:w-72">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <input
-                        type="text"
-                        placeholder="Search by name, email, phone..."
-                        className="w-full pl-9 pr-4 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+        <>
+            {/* TOOLBAR */}
+            <div
+                className="p-5 border-b border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-center bg-white sticky top-0 z-20">
+                <div className="flex gap-3 w-full sm:w-auto">
+                    {/* Search */}
+                    <div className="relative w-full sm:w-72 group">
+                        <Search
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-600 transition-colors w-4 h-4"/>
+                        <input
+                            type="text"
+                            placeholder="Search by name, email..."
+                            className="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 border-transparent focus:bg-white border focus:border-green-500 rounded-lg outline-none transition-all"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Filter */}
+                    <div className="relative">
+                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3"/>
+                        <select
+                            value={sourceFilter}
+                            onChange={(e) => setSourceFilter(e.target.value)}
+                            className="pl-8 pr-4 py-2.5 text-sm bg-gray-50 hover:bg-gray-100 border-transparent rounded-lg cursor-pointer outline-none appearance-none"
+                        >
+                            <option value="ALL">All Sources</option>
+                            <option value="WHATSAPP_GROUP">WhatsApp</option>
+                            <option value="WEBSITE">Website</option>
+                            <option value="PERSON">Referral</option>
+                        </select>
+                    </div>
                 </div>
-                <button
-                    onClick={handleExport}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
-                >
-                    <Download className="w-4 h-4" />
-                    Export to Excel
+
+                <button onClick={handleExport}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-[#0a2f1c] hover:bg-[#14422b] text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg">
+                    <Download className="w-4 h-4"/> <span>Export CSV</span>
                 </button>
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b">
+            {/* TABLE */}
+            <div className="overflow-x-auto min-h-[500px]">
+                <table className="w-full text-sm text-left border-collapse">
+                    <thead className="text-xs text-gray-400 uppercase bg-gray-50/80 sticky top-0 backdrop-blur-sm z-10">
                     <tr>
-                        <th className="px-6 py-3">Student</th>
-                        <th className="px-6 py-3">Contact</th>
-                        <th className="px-6 py-3">Education</th>
-                        <th className="px-6 py-3">Reference</th>
-                        <th className="px-6 py-3">Payment</th>
-                        <th className="px-6 py-3">Status</th>
+                        <th className="px-6 py-4 font-semibold tracking-wider">Student</th>
+                        <th className="px-6 py-4 font-semibold tracking-wider">Education</th>
+                        <th className="px-6 py-4 font-semibold tracking-wider">Source</th>
+                        <th className="px-6 py-4 font-semibold tracking-wider">Payment</th>
+                        <th className="px-6 py-4 text-right">Action</th>
                     </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
-                    {filteredData.length > 0 ? (
-                        filteredData.map((row) => (
-                            <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="px-6 py-4 font-medium text-gray-900">
-                                    <div>{row.name}</div>
-                                    <div className="text-xs text-gray-500 font-normal">{row.city}, {row.state}</div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="text-gray-900">{row.email}</div>
-                                    <div className="text-xs text-gray-500">{row.whatsappNumber}</div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="truncate max-w-[150px]" title={row.institute || ""}>
-                                        {row.institute}
+                    <tbody className="divide-y divide-gray-50">
+                    {filteredData.map((row) => (
+                        <tr key={row.id} className="group hover:bg-green-50/30 transition-colors">
+
+                            {/* Name & Avatar */}
+                            <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                    <div
+                                        className="w-10 h-10 rounded-full bg-gradient-to-br from-green-100 to-green-200 text-green-700 flex items-center justify-center font-bold text-xs shadow-inner">
+                                        {getInitials(row.name)}
                                     </div>
-                                    <div className="text-xs text-gray-500">{row.education}</div>
-                                </td>
-                                <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-medium">
-                      {row.submissionRefference?.type?.replace("_", " ")}
-                    </span>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-2">
-                                        {row.payment?.UpiImageUrl ? (
-                                            <a
-                                                href={row.payment.UpiImageUrl}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="text-green-600 hover:underline flex items-center gap-1"
-                                            >
-                                                View <ExternalLink className="w-3 h-3" />
-                                            </a>
-                                        ) : (
-                                            <span className="text-gray-400">No Receipt</span>
-                                        )}
+                                    <div>
+                                        <div
+                                            className="font-medium text-gray-900 group-hover:text-green-800 transition-colors">{row.name}</div>
+                                        <div className="text-xs text-gray-500">{row.email}</div>
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1">
-                                        {row.payment?.paymentDate ? new Date(row.payment.paymentDate).toLocaleDateString() : ""}
+                                </div>
+                            </td>
+
+                            {/* Education */}
+                            <td className="px-6 py-4">
+                                <div className="text-gray-700 font-medium truncate max-w-[180px]"
+                                     title={row.institute}>{row.institute}</div>
+                                <div className="text-xs text-gray-400">{row.education}</div>
+                            </td>
+
+                            {/* Source Badge */}
+                            <td className="px-6 py-4">
+                   <span
+                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
+                           row.submissionRefference?.type === 'WHATSAPP_GROUP' ? 'bg-green-100 text-green-700' :
+                               row.submissionRefference?.type === 'WEBSITE' ? 'bg-blue-100 text-blue-700' :
+                                   'bg-purple-100 text-purple-700'
+                       }`}>
+                      {row.submissionRefference?.type === 'WHATSAPP_GROUP' ? 'WhatsApp' :
+                          row.submissionRefference?.type?.replace("_", " ") || 'Unknown'}
+                   </span>
+                            </td>
+
+                            {/* Payment Status */}
+                            <td className="px-6 py-4">
+                                {row.payment?.UpiImageUrl ? (
+                                    <div className="flex items-center gap-1.5 text-green-600 font-medium text-xs">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"/>
+                                        Verified
                                     </div>
-                                </td>
-                                <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
-                      Received
-                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    <button
-                                        onClick={async () => {
-                                            if(confirm("Are you sure you want to delete this student?")) {
-                                                await deleteSubmission(row.id);
-                                            }
-                                        }}
-                                        className="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded-full transition-colors"
-                                        title="Delete Submission"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                No submissions found matching your search.
+                                ) : (
+                                    <div className="flex items-center gap-1.5 text-orange-500 font-medium text-xs">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-orange-500"/>
+                                        Pending
+                                    </div>
+                                )}
+                                <div className="text-[10px] text-gray-400 mt-0.5">
+                                    {row.payment?.paymentDate ? new Date(row.payment.paymentDate).toLocaleDateString() : ""}
+                                </div>
+                            </td>
+
+                            {/* Action */}
+                            <td className="px-6 py-4 text-right">
+                                <button
+                                    onClick={() => setSelectedSubmission(row)}
+                                    className="p-2 text-gray-400 hover:text-[#0a2f1c] hover:bg-green-100 rounded-lg transition-all"
+                                >
+                                    <Eye className="w-5 h-5"/>
+                                </button>
                             </td>
                         </tr>
-                    )}
+                    ))}
                     </tbody>
                 </table>
+                {filteredData.length === 0 && (
+                    <div className="p-10 text-center text-gray-400 text-sm">No students found matching your
+                        filters.</div>
+                )}
             </div>
 
-            {/* Footer / Pagination Placeholder */}
-            <div className="px-6 py-4 border-t bg-gray-50 text-xs text-gray-500 flex justify-between">
-                <span>Showing {filteredData.length} entries</span>
-            </div>
-        </div>
+            <SubmissionDetailsModal
+                submission={selectedSubmission}
+                isOpen={!!selectedSubmission}
+                onClose={() => setSelectedSubmission(null)}
+            />
+        </>
     );
 }

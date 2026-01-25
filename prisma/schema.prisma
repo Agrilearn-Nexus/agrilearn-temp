@@ -110,7 +110,7 @@ model SubmissionReference {
 
 model Payment {
   id          String        @id @unique @default(uuid(7))
-  upiId       String        @unique
+  upiId       String
   paymentDate DateTime
   upiImageId  String?
   UpiImageUrl String?
