@@ -4,8 +4,17 @@ import {useEffect, useState} from "react"
 import Link from "next/link"
 import Image from "next/image"
 import {usePathname} from "next/navigation"
+import {handleSignOut} from "@/actions/auth"
 
-const Navbar = () => {
+interface NavbarProps {
+    user?: {
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+    }
+}
+
+const Navbar = ({user}: NavbarProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const pathname = usePathname()
@@ -54,6 +63,7 @@ const Navbar = () => {
                     </h2>
                 </Link>
 
+                {/* DESKTOP MENU */}
                 <div className="hidden md:flex items-center gap-8">
                     <div className="flex gap-6">
                         {navLinks.map((item) => (
@@ -70,17 +80,37 @@ const Navbar = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Link href="/register"
-                              className="text-[16px] font-medium px-5 py-2 border border-white/30 rounded-full hover:bg-[#E8BA30] hover:text-black hover:border-[#E8BA30] transition-all">
-                            Register
-                        </Link>
-                        <button
-                            className="text-[16px] font-medium px-5 py-2 bg-[#E8BA30] text-black border border-[#E8BA30] rounded-full hover:bg-white hover:border-white transition-all shadow-lg hover:scale-105">
-                            Get Started
-                        </button>
+                        {user ? (
+                            // LOGGED IN STATE (ADMIN)
+                            <>
+                                <Link href="/admin/dashboard"
+                                      className="text-[16px] font-medium px-5 py-2 border border-white/30 rounded-full hover:bg-white hover:text-green-950 transition-all">
+                                    Dashboard
+                                </Link>
+                                <button
+                                    onClick={() => handleSignOut()}
+                                    className="cursor-pointer text-[16px] font-medium px-5 py-2 bg-red-600/90 text-white border border-red-600 rounded-full hover:bg-red-700 transition-all shadow-lg hover:scale-105"
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            // LOGGED OUT STATE
+                            <>
+                                <Link href="/register"
+                                      className="text-[16px] font-medium px-5 py-2 border border-white/30 rounded-full hover:bg-[#E8BA30] hover:text-black hover:border-[#E8BA30] transition-all">
+                                    Register
+                                </Link>
+                                <button
+                                    className="text-[16px] font-medium px-5 py-2 bg-[#E8BA30] text-black border border-[#E8BA30] rounded-full hover:bg-white hover:border-white transition-all shadow-lg hover:scale-105">
+                                    Get Started
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
 
+                {/* MOBILE TOGGLE */}
                 <div className="md:hidden">
                     <button onClick={() => setIsOpen(!isOpen)} className="text-white focus:outline-none p-2">
                         <div className="flex flex-col gap-1.5">
@@ -95,12 +125,47 @@ const Navbar = () => {
                 </div>
             </div>
 
+            {/* MOBILE MENU */}
             <div
                 className={`fixed inset-0 bg-green-950/98 z-[99] flex flex-col items-center justify-center gap-8 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
                 {navLinks.map((item) => (
                     <Link key={item.name} href={item.href} onClick={() => setIsOpen(false)}
-                          className="text-2xl font-serif text-white hover:text-[#E8BA30]">{item.name}</Link>
+                          className="text-2xl font-serif text-white hover:text-[#E8BA30]">
+                        {item.name}
+                    </Link>
                 ))}
+
+                {/* MOBILE AUTH LINKS */}
+                <div className="flex flex-col gap-4 mt-4 w-full px-10">
+                    {user ? (
+                        <>
+                            <Link href="/admin/dashboard" onClick={() => setIsOpen(false)}
+                                  className="text-center text-xl font-medium px-5 py-3 border border-white/30 rounded-full text-white hover:bg-white hover:text-green-950 transition-all">
+                                Dashboard
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    handleSignOut();
+                                }}
+                                className="cursor-pointer text-center text-xl font-medium px-5 py-3 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all"
+                            >
+                                Logout
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link href="/register" onClick={() => setIsOpen(false)}
+                                  className="text-center text-xl font-medium px-5 py-3 border border-white/30 rounded-full text-white hover:bg-[#E8BA30] hover:text-black transition-all">
+                                Register
+                            </Link>
+                            <button
+                                className="text-xl font-medium px-5 py-3 bg-[#E8BA30] text-black rounded-full hover:bg-white transition-all">
+                                Get Started
+                            </button>
+                        </>
+                    )}
+                </div>
             </div>
         </nav>
     )
