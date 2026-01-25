@@ -3,7 +3,7 @@ import Google from "next-auth/providers/google"
 import {PrismaAdapter} from "@auth/prisma-adapter"
 import {prisma} from "@/lib/prisma"
 
-const ALLOWED_EMAIL = "satyamkumarbgs066@gmail.com"
+const ALLOWED_EMAIL = process.env.ALLOWED_EMAIL!;
 
 export const {handlers, auth, signIn, signOut} = NextAuth({
     adapter: PrismaAdapter(prisma),
