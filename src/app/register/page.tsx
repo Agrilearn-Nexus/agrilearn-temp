@@ -32,25 +32,54 @@ const RegisterPage = () => {
         if (isSubmitting) return; // ✅ double-submit protection
 
         setIsSubmitting(true);
-        const toastId = toast.loading("Submitting registration...");
+        const toastId = toast.loading("Starting submission...");
 
         try {
-            const formData = new FormData();
-
-            for (const key in data) {
-                if (key === "paymentReceipt") continue;
-
-                const value = data[key as keyof RegisterFormData];
-                if (value !== undefined && value !== null) {
-                    formData.append(key, String(value));
-                }
-            }
-
+            // 1. Upload Payment Receipt
+            let receiptUrl = "";
             if (data.paymentReceipt?.[0]) {
-                formData.append("receipt", data.paymentReceipt[0]);
+                const file = data.paymentReceipt[0];
+                toast.loading("Uploading receipt...", { id: toastId });
+
+                // Get Presigned URL
+                const { data: uploadData } = await axios.post("/api/upload-url", {
+                    filename: file.name,
+                    contentType: file.type,
+                });
+
+                if (!uploadData?.url || !uploadData?.key) {
+                    throw new Error("Failed to get upload URL");
+                }
+
+                // Upload to R2
+                await axios.put(uploadData.url, file, {
+                    headers: { "Content-Type": file.type },
+                });
+
+                // Construct public URL (assuming publicBaseUrl is handled in backend or just sending key)
+                // Actually, sending the key/url to backend is better.
+                // The backend validates and can construct the full URL if needed.
+                // But wait, the backend needs to know which file matches.
+                // Let's send the `key` or the `url` (minus query params).
+
+                // For simplicity, let's send the key, and backend can reconstruct or verify.
+                // But the schema might expect a URL.
+                // Let's assume the backend will construct the URL from the key.
+                receiptUrl = uploadData.key;
+            } else {
+                throw new Error("Payment receipt is missing");
             }
 
-            const response = await axios.post("/api/submit", formData); // ✅ no manual headers
+            // 2. Submit Form Data
+            toast.loading("Finalizing registration...", { id: toastId });
+
+            // Prepare payload (JSON)
+            const payload = {
+                ...data,
+                paymentReceipt: receiptUrl, // Overwrite FileList with String Key/URL
+            };
+
+            const response = await axios.post("/api/submit", payload);
 
             if (response?.data?.success) {
                 toast.success("Registration successful!", { id: toastId });

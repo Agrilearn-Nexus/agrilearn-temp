@@ -3,7 +3,13 @@ import {sendEmail} from "@/lib/mailer";
 import SubmissionSuccessEmail from "@/emails/SubmissionSuccessEmail";
 
 export const notifySubmission = inngest.createFunction(
-    {id: "notify-submission"},
+    {
+        id: "notify-submission",
+        retries: 3,
+        onFailure: async ({ event, error }) => {
+            console.error("Notification failed:", error);
+        }
+    },
     {event: "submission.persisted"},
 
     async ({event, step}) => {

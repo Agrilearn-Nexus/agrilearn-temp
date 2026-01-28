@@ -1,13 +1,19 @@
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/prisma";
-import {ReferenceType} from "@/.generated/enums";
+import { ReferenceType } from "@/.generated/enums";
 
 export const persistSubmission = inngest.createFunction(
-    { id: "persist-submission" },
+    {
+        id: "persist-submission",
+        retries: 5,
+        onFailure: async ({ event, error }) => {
+            console.error("Persist failed:", error);
+        }
+    },
     { event: "submission.validated" },
 
     async ({ event, step }) => {
-        const { submissionData, paymentReceipt } = event.data;
+        const { submissionData, paymentReceipt, paymentReceiptKey } = event.data;
 
         const record = await step.run("db-save", async () => {
             let refType: ReferenceType = "WEBSITE";
@@ -39,6 +45,7 @@ export const persistSubmission = inngest.createFunction(
                             upiId: submissionData.upiId || "N/A",
                             paymentDate: new Date(submissionData.paymentDate),
                             UpiImageUrl: paymentReceipt,
+                            upiImageId: paymentReceiptKey || null,
                         }
                     },
 
