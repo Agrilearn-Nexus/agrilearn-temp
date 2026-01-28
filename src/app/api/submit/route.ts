@@ -1,41 +1,35 @@
 import { inngest } from "@/inngest/client";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { saveTempFile } from "@/utils/temp-storage";
+import { publicBaseUrl } from "@/lib/r2";
 
 export async function POST(req: Request) {
     try {
-        const formData = await req.formData();
+        const body = await req.json();
         const submissionId = crypto.randomUUID();
 
-        // 1. Extract the file
-        const file = formData.get("receipt") as File | null;
-        if (!file) {
+        const { paymentReceipt, ...submissionData } = body;
+
+        if (!paymentReceipt) {
             return NextResponse.json({ success: false, message: "Receipt file is required" }, { status: 400 });
         }
 
-        // 2. Save to local disk (Fast I/O) - This avoids the network latency of R2
-        const receiptTempKey = `${submissionId}`;
-        await saveTempFile(receiptTempKey, file);
-
-        // 3. Extract other data
-        const submissionData: Record<string, any> = {};
-        formData.forEach((value, key) => {
-            if (key !== "receipt") submissionData[key] = value.toString();
-        });
+        // paymentReceipt is the R2 key (e.g. payments/uuid.jpg)
+        const receiptUrl = `${publicBaseUrl}/${paymentReceipt}`;
 
         const paymentData = {
-            amountPaid: formData.get("amountPaid")?.toString(),
-            paymentDate: formData.get("paymentDate")?.toString(),
-            upiId: formData.get("upiId")?.toString(),
+            amountPaid: submissionData.amountPaid,
+            paymentDate: submissionData.paymentDate,
+            upiId: submissionData.upiId,
         };
 
-        // 4. Trigger the Event (Worker picks up the file using receiptTempKey)
+        // Trigger the Event
         await inngest.send({
             name: "submission.received",
             data: {
                 submissionId,
-                receiptTempKey,
+                receiptUrl, // Full URL
+                paymentReceiptKey: paymentReceipt, // Key, just in case
                 submissionData,
                 paymentData,
             },

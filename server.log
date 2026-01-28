@@ -1,0 +1,25 @@
+
+> agrilearn@0.1.0 dev /app
+> next dev
+
+▲ Next.js 16.1.4 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
+
+✓ Starting...
+✓ Ready in 2.5s
+○ Compiling /register ...
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (/app/.next/dev/server/chunks/ssr/35618_@auth_core_14b905e8._.js:513:16)
+    at Auth (/app/.next/dev/server/chunks/ssr/35618_@auth_core_14b905e8._.js:5330:289)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:549:9)
+    at process.processTimers (node:internal/timers:523:7)
+ GET /register 200 in 12.2s (compile: 9.4s, render: 2.8s)
+[31m[auth][error][0m MissingSecret: Please define a `secret`. Read more at https://errors.authjs.dev#missingsecret
+    at assertConfig (/app/.next/dev/server/chunks/ssr/35618_@auth_core_14b905e8._.js:513:16)
+    at Auth (/app/.next/dev/server/chunks/ssr/35618_@auth_core_14b905e8._.js:5330:289)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at listOnTimeout (node:internal/timers:549:9)
+    at process.processTimers (node:internal/timers:523:7)
+ GET /register 200 in 281ms (compile: 7ms, render: 274ms)

@@ -24,9 +24,30 @@ export function SubmissionTable({data}: { data: any[] }) {
     // Export Logic
     const handleExport = () => {
         const excelData = filteredData.map((item) => ({
-            Name: item.name, Email: item.email, Phone: item.whatsappNumber,
-            College: item.institute, Payment: item.payment?.amountPaid || "0",
-            Source: item.submissionRefference?.type
+            "Submission ID": item.id,
+            "Full Name": item.name,
+            "Email": item.email,
+            "Phone": item.whatsappNumber,
+            "Education": item.education,
+            "Designation": item.currentDesignation,
+            "Institute/College": item.institute,
+            "University/Organization": item.organization,
+
+            "Address": item.address,
+            "City": item.city,
+            "District": item.district,
+            "State": item.state,
+            "Postal Code": item.postalCode,
+
+            "Payment Amount": item.payment?.amountPaid || "0",
+            "Payment Date": item.payment?.paymentDate ? new Date(item.payment.paymentDate).toLocaleDateString() : "N/A",
+            "UPI ID": item.payment?.upiId || "N/A",
+            "Receipt URL": item.payment?.UpiImageUrl || "N/A",
+
+            "Reference Source": item.submissionRefference?.type,
+            "Referred By": item.submissionRefference?.personName || "N/A",
+
+            "Registration Date": new Date(item.createdAt).toLocaleString(),
         }));
         const worksheet = XLSX.utils.json_to_sheet(excelData);
         const workbook = XLSX.utils.book_new();
