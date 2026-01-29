@@ -18,7 +18,7 @@ const Navbar = ({user}: NavbarProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const pathname = usePathname()
-    const isTransparentNav = pathname === "/" || pathname === "/register" || pathname === "/admin/dashboard"
+    const isTransparentNav = pathname === "/" || pathname === "/register"
     const navLinks = [
         {name: "Home", href: "/#home"},
         {name: "Services", href: "/#services"},

@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, {useState} from "react";
+import {useForm, FormProvider} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import Image from "next/image";
 import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import toast, {Toaster} from "react-hot-toast";
+import {useRouter} from "next/navigation";
 
 import FormHeader from "@/components/form/FormHeader";
 import PersonalDetails from "@/components/form/PersonalDetails";
@@ -16,7 +16,7 @@ import FormFooter from "@/components/form/FormFooter";
 import ReferenceDetails from "@/components/form/ReferenceDetails";
 import FormHero from "@/components/form/FormHero";
 
-import { registerSchema, RegisterFormData } from "@/lib/schemas/register";
+import {registerSchema, RegisterFormData} from "@/lib/schemas/register";
 
 const RegisterPage = () => {
     const router = useRouter(); // ✅ hook at top-level
@@ -39,10 +39,10 @@ const RegisterPage = () => {
             let receiptUrl = "";
             if (data.paymentReceipt?.[0]) {
                 const file = data.paymentReceipt[0];
-                toast.loading("Uploading receipt...", { id: toastId });
+                toast.loading("Uploading receipt...", {id: toastId});
 
                 // Get Presigned URL
-                const { data: uploadData } = await axios.post("/api/upload-url", {
+                const {data: uploadData} = await axios.post("/api/upload-url", {
                     filename: file.name,
                     contentType: file.type,
                 });
@@ -53,7 +53,7 @@ const RegisterPage = () => {
 
                 // Upload to R2
                 await axios.put(uploadData.url, file, {
-                    headers: { "Content-Type": file.type },
+                    headers: {"Content-Type": file.type},
                 });
 
                 // Construct public URL (assuming publicBaseUrl is handled in backend or just sending key)
@@ -71,7 +71,7 @@ const RegisterPage = () => {
             }
 
             // 2. Submit Form Data
-            toast.loading("Finalizing registration...", { id: toastId });
+            toast.loading("Finalizing registration...", {id: toastId});
 
             // Prepare payload (JSON)
             const payload = {
@@ -79,10 +79,12 @@ const RegisterPage = () => {
                 paymentReceipt: receiptUrl, // Overwrite FileList with String Key/URL
             };
 
+            console.log(`submiting data: `, payload)
+
             const response = await axios.post("/api/submit", payload);
 
             if (response?.data?.success) {
-                toast.success("Registration successful!", { id: toastId });
+                toast.success("Registration successful!", {id: toastId});
                 methods.reset();
                 router.push("/");
             } else {
@@ -93,7 +95,7 @@ const RegisterPage = () => {
             console.error("Submission Error:", error);
             toast.error(
                 error?.response?.data?.message || error?.message || "Failed to submit form",
-                { id: toastId }
+                {id: toastId}
             );
         } finally {
             setIsSubmitting(false);
@@ -106,7 +108,7 @@ const RegisterPage = () => {
 
     return (
         <>
-            <Toaster position="top-right" />
+            <Toaster position="top-right"/>
 
             {/* Hero Section */}
             <div className="relative w-full min-h-screen flex flex-col">
@@ -118,12 +120,12 @@ const RegisterPage = () => {
                         priority
                         className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/50" />
+                    <div className="absolute inset-0 bg-black/50"/>
                 </div>
 
                 <div className="relative z-10 flex flex-col min-h-screen">
                     <div className="grow flex items-center justify-center py-12 md:py-0 px-4">
-                        <FormHero />
+                        <FormHero/>
                     </div>
                 </div>
             </div>
@@ -136,14 +138,14 @@ const RegisterPage = () => {
                         className="w-full"
                         noValidate
                     >
-                        <FormHeader />
+                        <FormHeader/>
 
-                        <PersonalDetails />
-                        <PaymentDetails />
-                        <ReferenceDetails />
-                        <WhatsappConfirmation />
+                        <PersonalDetails/>
+                        <PaymentDetails/>
+                        <ReferenceDetails/>
+                        <WhatsappConfirmation/>
 
-                        <FormFooter isDisabled={isSubmitting} />
+                        <FormFooter isDisabled={isSubmitting}/>
                     </form>
                 </FormProvider>
             </div>
