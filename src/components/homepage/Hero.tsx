@@ -43,10 +43,10 @@ const Hero = () => {
 
             <div className="animate-fade-in-up delay-300 grid grid-cols-2 md:grid-cols-4 gap-4 w-full mt-8 md:mt-10">
                 {[
-                    {total: "10K+", work: "Farmers Trained"},
-                    {total: "500+", work: "Workshops Held"},
-                    {total: "50+", work: "Research Papers"},
-                    {total: "25+", work: "Partner Inst."},
+                    {total: "1K+", work: "Farmers Trained"},
+                    {total: "2+", work: "Workshops Held"},
+                    {total: "10+", work: "Research Papers"},
+                    {total: "5+", work: "Partner Inst."},
                 ].map((item, index) => (
                     <div
                         key={index}
