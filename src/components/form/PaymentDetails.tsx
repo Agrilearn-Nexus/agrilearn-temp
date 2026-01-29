@@ -15,7 +15,7 @@ const PaymentDetails = () => {
 
   const paymentReceipt = watch("paymentReceipt");
 
-  // --- Data Definitions ---
+  // --- 1. Data Definitions ---
   const feeStructure = [
     { category: "MSc", softCopy: "₹149", hardCopy: "₹199" },
     { category: "PhD Research Scholar", softCopy: "₹149", hardCopy: "₹199" },
@@ -23,6 +23,19 @@ const PaymentDetails = () => {
     { category: "Associate Professor", softCopy: "₹199", hardCopy: "₹249" },
     { category: "Scientist", softCopy: "₹199", hardCopy: "₹249" },
   ];
+
+  // Map full categories to shorter abbreviations for the dropdown display
+  const getAbbreviation = (category: string) => {
+    const map: Record<string, string> = {
+      "MSc": "MSc",
+      "PhD": "PhD",
+      "Research Scholar": "Res. Scholar",
+      "Assistant Professor": "Asst. Prof.",
+      "Associate Professor": "Assoc. Prof.",
+      "Scientist": "Scientist",
+    };
+    return map[category] || category;
+  };
 
   const optionArray = [
     { category: "MSc", type: "Soft Copy", price: 149 },
@@ -43,7 +56,7 @@ const PaymentDetails = () => {
   const [selectedUpi, setSelectedUpi] = useState(upiOptions[0]);
   const [copied, setCopied] = useState(false);
 
-  // --- Handlers ---
+  // --- 2. Handlers ---
   const handleCopy = async () => {
     if (selectedUpi) {
       await navigator.clipboard.writeText(selectedUpi);
@@ -52,24 +65,17 @@ const PaymentDetails = () => {
     }
   };
 
-  // 1. Manually register feeDetails to hijack the onChange event
   const feeRegister = register("feeDetails", {
     required: "Please select a certificate type",
   });
 
-  // 2. Custom Handler for Selection
   const handleFeeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    // A. Update Form State
     feeRegister.onChange(e);
-
-    // B. Extract Price and Auto-fill Amount
     const selectedValue = e.target.value;
-    const match = selectedValue.match(/(\d+)$/); // Finds digits at the end of string
+    const match = selectedValue.match(/(\d+)$/);
 
     if (match) {
-      const price = match[0];
-      // Force update the Amount Paid field
-      setValue("amountPaid", price, { shouldValidate: true, shouldDirty: true });
+      setValue("amountPaid", match[0], { shouldValidate: true, shouldDirty: true });
     } else {
       setValue("amountPaid", "");
     }
@@ -79,6 +85,7 @@ const PaymentDetails = () => {
     <div className="w-full flex justify-center p-4 md:p-8">
       <div className="w-full bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border-t-8 border-[#3F7A5A] overflow-hidden">
         <div className="p-6 md:p-10">
+          
           {/* Header */}
           <div className="flex items-center gap-4 mb-6">
             <div className="shrink-0 w-10 h-10 rounded-full bg-[#3F7A5A] text-white flex items-center justify-center font-bold text-xl font-serif">
@@ -153,15 +160,18 @@ const PaymentDetails = () => {
                 ref={feeRegister.ref}
                 onBlur={feeRegister.onBlur}
                 onChange={handleFeeChange}
-                className="border rounded-md border-blue-200 p-4 w-full md:w-[75%]"
+               
+                className="border rounded-md border-blue-200 p-4 w-full truncate pr-8"
               >
                 <option value="">Select Category - Type - Fee</option>
                 {optionArray.map((item, i) => (
+                  
                   <option
                     key={i}
                     value={`${item.category} – ${item.type} – ₹${item.price}`}
                   >
-                    {item.category} – {item.type} – ₹{item.price}
+                    
+                    {getAbbreviation(item.category)} – {item.type} – ₹{item.price}
                   </option>
                 ))}
               </select>
@@ -190,7 +200,7 @@ const PaymentDetails = () => {
 
             <div className="flex items-center gap-4 bg-white p-3 rounded w-full max-w-5xl justify-between mx-auto sm:mx-0">
               <select
-                className="border rounded-md border-blue-200 p-4 w-[75%]"
+                className="border rounded-md border-blue-200 p-4 w-full"
                 value={selectedUpi}
                 onChange={(e) => setSelectedUpi(e.target.value)}
               >
@@ -215,7 +225,6 @@ const PaymentDetails = () => {
           {/* Inputs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              {/* Amount Paid Input (READ ONLY) */}
               <div className="flex flex-col">
                 <label className="text-sm font-bold text-gray-800 mb-2">
                   Amount Paid (₹) <span className="text-red-500">*</span>
@@ -223,11 +232,8 @@ const PaymentDetails = () => {
                 <input
                   type="number"
                   placeholder="Amount will be auto-filled"
-                  readOnly={true} // --- User cannot edit this field ---
-                  {...register("amountPaid", {
-                    required: "Amount is required",
-                  })}
-                  // Added bg-gray-100 and cursor-default to indicate uneditable state visually
+                  readOnly={true}
+                  {...register("amountPaid", { required: "Amount is required" })}
                   className="w-full px-4 py-3 bg-gray-100 cursor-default border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3F7A5A]/20 focus:border-[#3F7A5A]"
                 />
                 {errors.amountPaid && (
@@ -302,7 +308,6 @@ const PaymentDetails = () => {
                   </div>
                 )}
               </div>
-
               {errors.paymentReceipt && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.paymentReceipt.message as string}
