@@ -30,6 +30,8 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
           tags: ghcr.io/agrilearn-nexus/agrilearn-temp/app:latest
 
       # 3. Deploy to VPS (Only update config and pull)
