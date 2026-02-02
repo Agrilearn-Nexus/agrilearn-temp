@@ -25,6 +25,11 @@ COPY . .
 # Disable telemetry during the build
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
+ENV R2_ENDPOINT="https://dummy.r2.cloudflarestorage.com"
+ENV R2_ACCESS_KEY_ID="dummy_key_id"
+ENV R2_SECRET_ACCESS_KEY="dummy_secret_key"
+ENV R2_BUCKET_NAME="dummy_bucket"
+
 RUN npx prisma generate
 
 # Build the project
