@@ -1,16 +1,41 @@
 services:
+  # Next.js Application Service
+  app:
+    container_name: agrilearn_app
+    image: ghcr.io/agrilearn-nexus/agrilearn-temp/app:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Database Connection
+      - DATABASE_URL=${DATABASE_URL}
+      # NextAuth / Auth.js
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+      # Inngest Keys (Must match the inngest service)
+      - INNGEST_EVENT_KEY=${INNGEST_EVENT_KEY}
+      - INNGEST_SIGNING_KEY=${INNGEST_SIGNING_KEY}
+      # Point to the local Inngest container since you are self-hosting it
+      - INNGEST_BASE_URL=http://inngest:8288
+    networks:
+      - agri_network
+    depends_on:
+      - inngest
+
+  # Inngest Server Service
   inngest:
     image: inngest/inngest:latest
     container_name: agrilearn_inngest
     restart: unless-stopped
-    command: ["inngest", "start"]   # 🔥 REQUIRED
+    command: [ "inngest", "start" ]
     ports:
       - "8288:8288"
     environment:
-      INNGEST_DEV: "0"
-      INNGEST_SIGNING_KEY: "${INNGEST_SIGNING_KEY}"
-      INNGEST_EVENT_KEY: "${INNGEST_EVENT_KEY}"
-
+      # Disable dev mode for VPS/Production usage
+      - INNGEST_DEV=0
+      - INNGEST_SIGNING_KEY=${INNGEST_SIGNING_KEY}
+      - INNGEST_EVENT_KEY=${INNGEST_EVENT_KEY}
     networks:
       - agri_network
 

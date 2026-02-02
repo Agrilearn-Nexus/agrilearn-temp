@@ -1,0 +1,61 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 1. Login to GitHub Container Registry
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 2. Build and Push the Image (Don't build on VPS!)
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/Agrilearn-Nexus/agrilearn-temp/app:latest
+
+      # 3. Deploy to VPS (Only update config and pull)
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/ubuntu/doxie
+            
+            # Login on VPS so it can pull the private image
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Update .env
+            cat << 'EOF' > .env
+            ${{ secrets.ENV_FILE }}
+            EOF
+
+            # Pull the new image FIRST (while app is still running)
+            docker compose pull
+
+            # Restart containers (minimal downtime)
+            # Docker Compose is smart enough to recreate only changed containers
+            docker compose up -d
+            
+            # Cleanup
+            docker image prune -f
