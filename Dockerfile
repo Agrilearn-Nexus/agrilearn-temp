@@ -23,7 +23,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Disable telemetry during the build
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN npx prisma generate
 
 # Build the project
 RUN \
