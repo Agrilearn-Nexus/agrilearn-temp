@@ -20,7 +20,9 @@ export default async function AdminDashboard() {
     const uniqueColleges = new Set(submissions.map(s => s.institute?.trim().toLowerCase())).size;
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 -mt-24">
+            
+            
             <div className="bg-[#0a2f1c] pt-32 pb-20 px-6 md:px-10 shadow-lg relative overflow-hidden">
 
                 {/* Background Decorative Element */}
