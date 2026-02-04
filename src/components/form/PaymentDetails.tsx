@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { FiCheckCircle, FiCopy, FiUploadCloud } from "react-icons/fi";
+import { FiCheckCircle, FiCopy, FiUploadCloud, FiChevronDown } from "react-icons/fi"; 
 import { BsInfoCircle } from "react-icons/bs";
 
 const PaymentDetails = () => {
@@ -15,7 +15,7 @@ const PaymentDetails = () => {
 
   const paymentReceipt = watch("paymentReceipt");
 
-  // --- 1. Data Definitions ---
+  // --- Data Definitions ---
   const feeStructure = [
     { category: "MSc", softCopy: "₹149", hardCopy: "₹199" },
     { category: "PhD Research Scholar", softCopy: "₹149", hardCopy: "₹199" },
@@ -24,7 +24,6 @@ const PaymentDetails = () => {
     { category: "Scientist", softCopy: "₹199", hardCopy: "₹249" },
   ];
 
-  // Map full categories to shorter abbreviations for the dropdown display
   const getAbbreviation = (category: string) => {
     const map: Record<string, string> = {
       "MSc": "MSc",
@@ -56,12 +55,50 @@ const PaymentDetails = () => {
   const [selectedUpi, setSelectedUpi] = useState(upiOptions[0]);
   const [copied, setCopied] = useState(false);
 
-  // --- 2. Handlers ---
+  
   const handleCopy = async () => {
-    if (selectedUpi) {
-      await navigator.clipboard.writeText(selectedUpi);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
+    if (!selectedUpi) return;
+
+    const performCopy = () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(selectedUpi);
+        performCopy();
+        return;
+      } catch (err) {
+        console.warn("Clipboard API failed, trying fallback...", err);
+      }
+    }
+
+    
+    try {
+        const textArea = document.createElement("textarea");
+        textArea.value = selectedUpi;
+        
+      
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        document.body.appendChild(textArea);
+        
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+            performCopy();
+        } else {
+            throw new Error("execCommand failed");
+        }
+    } catch (err) {
+        alert("Unable to copy automatically. Please copy the text below manually.");
     }
   };
 
@@ -104,43 +141,45 @@ const PaymentDetails = () => {
           </h3>
 
           <div className="overflow-hidden rounded-lg border border-gray-200 mb-8">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[#3F7A5A] text-white">
-                  <th className="p-4 font-semibold text-sm uppercase tracking-wide border-r border-[#3F7A5A]/50">
-                    Category
-                  </th>
-                  <th className="p-4 font-semibold text-sm uppercase tracking-wide border-r border-[#3F7A5A]/50">
-                    Soft Copy
-                  </th>
-                  <th className="p-4 font-semibold text-sm uppercase tracking-wide">
-                    Hard Copy
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-700">
-                {feeStructure.map((row, index) => (
-                  <tr
-                    key={index}
-                    className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                  >
-                    <td className="p-4 font-medium border-r border-gray-100">
-                      {row.category}
-                    </td>
-                    <td className="p-4 font-bold text-[#3F7A5A] border-r border-gray-100">
-                      {row.softCopy}
-                    </td>
-                    <td className="p-4 font-bold text-[#3F7A5A]">
-                      {row.hardCopy}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[500px]">
+                <thead>
+                    <tr className="bg-[#3F7A5A] text-white">
+                    <th className="p-4 font-semibold text-sm uppercase tracking-wide border-r border-[#3F7A5A]/50">
+                        Category
+                    </th>
+                    <th className="p-4 font-semibold text-sm uppercase tracking-wide border-r border-[#3F7A5A]/50">
+                        Soft Copy
+                    </th>
+                    <th className="p-4 font-semibold text-sm uppercase tracking-wide">
+                        Hard Copy
+                    </th>
+                    </tr>
+                </thead>
+                <tbody className="text-gray-700">
+                    {feeStructure.map((row, index) => (
+                    <tr
+                        key={index}
+                        className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                    >
+                        <td className="p-4 font-medium border-r border-gray-100">
+                        {row.category}
+                        </td>
+                        <td className="p-4 font-bold text-[#3F7A5A] border-r border-gray-100">
+                        {row.softCopy}
+                        </td>
+                        <td className="p-4 font-bold text-[#3F7A5A]">
+                        {row.hardCopy}
+                        </td>
+                    </tr>
+                    ))}
+                </tbody>
+                </table>
+            </div>
           </div>
 
           {/* Certificate Type Selection */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 mb-8">
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 sm:p-6 mb-8">
             <div className="flex gap-3 items-start mb-4">
               <BsInfoCircle className="text-blue-600 mt-1 shrink-0" size={20} />
               <div>
@@ -154,27 +193,27 @@ const PaymentDetails = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 bg-white p-3 rounded w-full max-w-5xl justify-between mx-auto sm:mx-0">
+            <div className="relative w-full max-w-5xl mx-auto sm:mx-0 bg-white rounded-md border border-blue-200">
               <select
                 name={feeRegister.name}
                 ref={feeRegister.ref}
                 onBlur={feeRegister.onBlur}
                 onChange={handleFeeChange}
-               
-                className="border rounded-md border-blue-200 p-4 w-full truncate pr-8"
+                className="w-full p-4 pr-10 appearance-none bg-transparent outline-none cursor-pointer text-gray-700 truncate"
               >
                 <option value="">Select Category - Type - Fee</option>
                 {optionArray.map((item, i) => (
-                  
                   <option
                     key={i}
                     value={`${item.category} – ${item.type} – ₹${item.price}`}
                   >
-                    
                     {getAbbreviation(item.category)} – {item.type} – ₹{item.price}
                   </option>
                 ))}
               </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                 <FiChevronDown size={20} />
+              </div>
             </div>
 
             {errors.feeDetails && (
@@ -184,8 +223,8 @@ const PaymentDetails = () => {
             )}
           </div>
 
-          {/* UPI Payment Section */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-6 mb-8">
+          
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 sm:p-6 mb-8">
             <div className="flex gap-3 items-start mb-4">
               <BsInfoCircle className="text-blue-600 mt-1 shrink-0" size={20} />
               <div>
@@ -198,27 +237,45 @@ const PaymentDetails = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 bg-white p-3 rounded w-full max-w-5xl justify-between mx-auto sm:mx-0">
-              <select
-                className="border rounded-md border-blue-200 p-4 w-full"
-                value={selectedUpi}
-                onChange={(e) => setSelectedUpi(e.target.value)}
-              >
-                {upiOptions.map((upi, index) => (
-                  <option key={index} value={upi}>
-                    {upi}
-                  </option>
-                ))}
-              </select>
+          
+            <div className="flex flex-col sm:flex-row items-stretch gap-3 w-full max-w-5xl mx-auto sm:mx-0">
+              
+              
+              <div className="relative grow bg-white rounded-lg border border-blue-200 shadow-sm">
+                <select
+                  className="w-full h-12 pl-4 pr-10 appearance-none bg-transparent outline-none cursor-pointer text-gray-800 font-medium"
+                  value={selectedUpi}
+                  onChange={(e) => setSelectedUpi(e.target.value)}
+                >
+                  {upiOptions.map((upi, index) => (
+                    <option key={index} value={upi}>
+                      {upi}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+                    <FiChevronDown size={20} />
+                </div>
+              </div>
 
+              {/* Enhanced Button */}
               <button
                 type="button"
                 onClick={handleCopy}
-                className="bg-[#3F7A5A] rounded-full px-4 py-2 text-white font-sans text-sm whitespace-nowrap flex flex-row items-center gap-2 cursor-pointer"
+                className={`shrink-0 h-12 px-6 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm ${
+                    copied 
+                    ? "bg-green-600 text-white border border-green-600" 
+                    : "bg-[#3F7A5A] text-white border border-[#3F7A5A] hover:bg-[#2e5c43]"
+                }`}
               >
-                {!copied ? <FiCopy size={16} /> : <FiCheckCircle size={16} />}
+                {!copied ? <FiCopy size={18} /> : <FiCheckCircle size={18} />}
                 {copied ? "Copied!" : "Copy ID"}
               </button>
+            </div>
+
+            {/* Mobile Fallback: Manual Selection Text */}
+            <div className="mt-2 text-xs text-center sm:text-left text-blue-800/70">
+                Having trouble? <span className="font-mono bg-blue-100 px-1 rounded select-all font-semibold">{selectedUpi}</span> (Long press to copy)
             </div>
           </div>
 
@@ -234,7 +291,7 @@ const PaymentDetails = () => {
                   placeholder="Amount will be auto-filled"
                   readOnly={true}
                   {...register("amountPaid", { required: "Amount is required" })}
-                  className="w-full px-4 py-3 bg-gray-100 cursor-default border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3F7A5A]/20 focus:border-[#3F7A5A]"
+                  className="w-full px-4 py-3 bg-gray-100 cursor-default border border-gray-200 rounded-lg text-gray-700 focus:outline-none"
                 />
                 {errors.amountPaid && (
                   <p className="text-red-500 text-xs">

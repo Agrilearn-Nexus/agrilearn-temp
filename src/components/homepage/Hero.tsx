@@ -1,5 +1,6 @@
 import {IoIosArrowRoundForward} from "react-icons/io"
 import {CiPlay1} from "react-icons/ci"
+import Link from "next/link"
 
 const Hero = () => {
     return (
@@ -23,16 +24,16 @@ const Hero = () => {
             </p>
 
             <div className="animate-fade-in-up delay-300 flex flex-col md:flex-row gap-4 w-full md:w-auto mt-4">
-                <button
+                <Link href={"/register"}
                     className="group relative overflow-hidden text-lg font-bold py-3 px-8 bg-[#E8BA30] rounded-xl text-black flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(232,186,48,0.6)]">
           <span className="relative z-10 flex items-center gap-2">
-            Explore Our Programs
+            Register
             <IoIosArrowRoundForward
                 size={"1.5rem"}
                 className="transition-transform duration-300 group-hover:translate-x-1"
             />
           </span>
-                </button>
+                </Link>
 
                 <button
                     className="group text-lg font-semibold py-3 px-8 border border-white/40 bg-white/5 backdrop-blur-sm rounded-xl flex items-center justify-center gap-2 hover:bg-white hover:text-black transition-all duration-300 hover:scale-105">

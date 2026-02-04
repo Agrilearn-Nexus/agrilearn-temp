@@ -19,6 +19,7 @@ const Navbar = ({user}: NavbarProps) => {
     const [scrolled, setScrolled] = useState(false)
     const pathname = usePathname()
     const isTransparentNav = pathname === "/" || pathname === "/register"
+    
     const navLinks = [
         {name: "Home", href: "/#home"},
         {name: "Services", href: "/#services"},
@@ -39,17 +40,28 @@ const Navbar = ({user}: NavbarProps) => {
         return () => window.removeEventListener("scroll", handleScroll)
     }, [])
 
-    const navbarBgClass = (isTransparentNav && !scrolled)
+    
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'unset'
+        }
+        return () => { document.body.style.overflow = 'unset' }
+    }, [isOpen])
+
+    const navbarBgClass = (isTransparentNav && !scrolled && !isOpen)
         ? "bg-transparent py-6"
         : "bg-green-950/95 backdrop-blur-md shadow-lg py-3"
 
     return (
         <nav className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${navbarBgClass}`}>
-            <div className="container mx-auto flex justify-between items-center px-4 md:px-8 text-white">
+            
+            
+            <div className="container mx-auto flex justify-between items-center px-4 md:px-8 text-white relative z-50">
 
                 <Link href="/" className="flex gap-3 items-center group">
-                    <div
-                        className="relative w-10 h-10 overflow-hidden rounded-full border-2 border-white/20 group-hover:border-[#E8BA30] transition-colors">
+                    <div className="relative w-10 h-10 overflow-hidden rounded-full border-2 border-white/20 group-hover:border-[#E8BA30] transition-colors">
                         <Image
                             src="/logo.jpeg"
                             alt="AgriLearn Nexus Logo"
@@ -72,8 +84,7 @@ const Navbar = ({user}: NavbarProps) => {
                                 className="capitalize text-[16px] font-medium relative group overflow-hidden hover:text-[#E8BA30] transition-colors"
                             >
                                 {item.name}
-                                <span
-                                    className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E8BA30] transition-all duration-300 group-hover:w-full"></span>
+                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E8BA30] transition-all duration-300 group-hover:w-full"></span>
                             </Link>
                         ))}
                     </div>
@@ -93,7 +104,6 @@ const Navbar = ({user}: NavbarProps) => {
                                 </button>
                             </>
                         ) : (
-                            // LOGGED OUT STATE
                             <>
                                 <Link href="/register"
                                       className="text-[16px] font-medium px-5 py-2 border border-white/30 rounded-full hover:bg-[#E8BA30] hover:text-black hover:border-[#E8BA30] transition-all">
@@ -108,24 +118,22 @@ const Navbar = ({user}: NavbarProps) => {
                     </div>
                 </div>
 
-                {/* MOBILE TOGGLE */}
+                {/* MOBILE TOGGLE BUTTON */}
                 <div className="md:hidden">
                     <button onClick={() => setIsOpen(!isOpen)} className="text-white focus:outline-none p-2">
                         <div className="flex flex-col gap-1.5">
-                            <span
-                                className={`block w-8 h-0.5 bg-white transition-all ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-                            <span
-                                className={`block w-8 h-0.5 bg-white transition-all ${isOpen ? 'opacity-0' : ''}`}></span>
-                            <span
-                                className={`block w-8 h-0.5 bg-white transition-all ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+                            <span className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+                            <span className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`}></span>
+                            <span className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
                         </div>
                     </button>
                 </div>
             </div>
 
-            {/* MOBILE MENU */}
+            
             <div
-                className={`fixed inset-0 bg-green-950/98 z-[99] flex flex-col items-center justify-center gap-8 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+                className={`fixed inset-0 h-[100dvh] bg-green-950 z-40 flex flex-col items-center justify-center gap-8 transition-all duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
+                
                 {navLinks.map((item) => (
                     <Link key={item.name} href={item.href} onClick={() => setIsOpen(false)}
                           className="text-2xl font-serif text-white hover:text-[#E8BA30]">
