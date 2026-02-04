@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp, FaExternalLinkAlt } from "react-icons/fa"; // Added icon for better visibility
 
 const WhatsappConfirmation = () => {
     const {
@@ -33,40 +33,41 @@ const WhatsappConfirmation = () => {
                             <FaWhatsapp className="text-[#3F7A5A]" size={24} />
                         </div>
 
-                        <div>
-                            <label className="flex items-center gap-3 cursor-pointer">
+                        <div className="w-full">
+                            <label className="flex items-start sm:items-center gap-3 cursor-pointer">
                                 <input
                                     type="checkbox"
                                     {...register("whatsappGroupJoined", {
-                                        required: "You have to join whatsapp group",
+                                        required: "You have to join the WhatsApp group",
                                     })}
-                                    className="w-5 h-5 rounded border-gray-300 accent-[#3F7A5A] focus:ring-[#3F7A5A] cursor-pointer"
+                                    className="mt-1 sm:mt-0 w-5 h-5 rounded border-gray-300 accent-[#3F7A5A] focus:ring-[#3F7A5A] cursor-pointer shrink-0"
                                 />
-                                <span className="font-bold text-gray-800 text-lg">
-                  I have joined the official WhatsApp Group{" "}
+                                <span className="font-bold text-gray-800 text-lg leading-tight">
+                                    I have joined the official WhatsApp Group{" "}
                                     <span className="text-red-500">*</span>
-                </span>
+                                </span>
                             </label>
 
-                            <div className="flex items-center gap-2">
-                                <p className="text-sm text-gray-600 ml-8">
+                            {/* UPDATED SECTION: Responsive Layout */}
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-2 ml-8">
+                                <p className="text-sm text-gray-600 leading-snug">
                                     Join our WhatsApp group for important updates and announcements.
                                 </p>
 
                                 <a
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-blue-700 text-md font-semibold hover:underline"
                                     href="https://chat.whatsapp.com/EpCPtmNaNDtJJ1VYVdEKQ5"
+                                    className="text-blue-700 text-sm font-bold hover:underline whitespace-nowrap inline-flex items-center gap-1 transition-colors"
                                 >
-                                    Join Now
+                                    Join Now <FaExternalLinkAlt size={12} />
                                 </a>
                             </div>
                         </div>
                     </div>
 
                     {errors.whatsappGroupJoined && (
-                        <p className="text-red-500 text-xs mt-2">
+                        <p className="text-red-500 text-xs mt-2 ml-12">
                             {errors.whatsappGroupJoined.message as string}
                         </p>
                     )}
