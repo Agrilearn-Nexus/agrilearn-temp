@@ -49,7 +49,7 @@ const MissionVision = () => {
               <FeatureRow 
                 icon={<Eye className="w-6 h-6 text-[#0a2f1c]" />} 
                 title="Our Vision"
-                desc="A world where every farmer has access to cutting-edge knowledge."
+                desc="To become a leading platform transforming agriculture through education, research, and innovation while empowering communities for a sustainable future.."
                 bg="bg-[#E8BA30]"
               />
               <FeatureRow 
