@@ -25,7 +25,7 @@ const Copyright = () => {
                     </Link>
 
                     <Link
-                        href="/terms-of-service"
+                        href="/terms"
                         className="text-[#B7B8AD] hover:text-[#E0B732] transition-colors"
                     >
                         Terms of Service
