@@ -28,7 +28,7 @@ const ArticleCard = ({ article }: { article: ArticleProps }) => {
       </div>
 
       {/* Content */}
-      <div className="p-7 flex flex-col flex-grow">
+      <div className="p-7 flex flex-col grow">
         <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
           <div className="flex items-center gap-1.5">
             <Calendar size={14} className="text-[#E8BA30]" />
@@ -44,7 +44,7 @@ const ArticleCard = ({ article }: { article: ArticleProps }) => {
           {article.title}
         </h3>
         
-        <p className="text-gray-600 mb-8 leading-relaxed line-clamp-3 flex-grow">
+        <p className="text-gray-600 mb-8 leading-relaxed line-clamp-3 grow">
           {article.excerpt}
         </p>
         

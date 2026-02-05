@@ -9,8 +9,8 @@ const MissionVision = () => {
           
           {/* Image Side */}
           <div className="relative animate-in fade-in slide-in-from-left duration-700">
-            <div className="absolute -inset-4 bg-gradient-to-br from-[#E8BA30]/20 to-[#0a2f1c]/20 rounded-3xl blur-2xl" />
-            <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-2xl">
+            <div className="absolute -inset-4 bg-linear-to-br from-[#E8BA30]/20 to-[#0a2f1c]/20 rounded-3xl blur-2xl" />
+            <div className="relative h-100 w-full rounded-2xl overflow-hidden shadow-2xl">
                <Image 
                  src="/about-whoWeAre.jpg" 
                  alt="Mission"
@@ -69,7 +69,7 @@ const MissionVision = () => {
 function FeatureRow({icon, title, desc, bg}: any) {
     return (
         <div className="flex gap-4 p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow">
-            <div className={`flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg ${bg}`}>
+            <div className={`shrink-0 w-12 h-12 flex items-center justify-center rounded-lg ${bg}`}>
                 {icon}
             </div>
             <div>

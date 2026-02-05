@@ -73,7 +73,7 @@ export default function MagazinePage() {
         <MagazineHero />
 
         <section className="py-24 relative">
-          <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-gray-100 to-transparent -z-10"></div>
+          <div className="absolute top-0 left-0 w-full h-64 bg-linear-to-b from-gray-100 to-transparent -z-10"></div>
 
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="flex flex-col items-center mb-20 text-center">

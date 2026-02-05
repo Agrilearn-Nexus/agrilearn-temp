@@ -33,7 +33,7 @@ const FeaturedArticle = ({ article }: { article: ArticleProps }) => {
             className="object-cover group-hover:scale-105 transition-transform duration-700"
             priority
           />
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-[#0a2f1c]/60 to-transparent md:bg-gradient-to-l"></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[#0a2f1c]/60 to-transparent md:bg-linear-to-l"></div>
            <div className="absolute top-6 left-6 bg-[#E8BA30] text-[#0a2f1c] text-xs font-bold px-4 py-1.5 rounded-full z-10 shadow-sm">
             FEATURED STORY
           </div>
