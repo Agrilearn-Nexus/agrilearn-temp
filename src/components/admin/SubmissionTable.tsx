@@ -38,8 +38,8 @@ export function SubmissionTable({data}: { data: any[] }) {
             "District": item.district,
             "State": item.state,
             "Postal Code": item.postalCode,
-
-            "Payment Amount": item.payment?.amountPaid || "0",
+            "CertificationType": item.submissionDetail || "N/A",
+            "Payment Amount": `₹${item.payment?.amountPaid || "0"}`,
             "Payment Date": item.payment?.paymentDate ? new Date(item.payment.paymentDate).toLocaleDateString() : "N/A",
             "UPI ID": item.payment?.upiId || "N/A",
             "Receipt URL": item.payment?.UpiImageUrl || "N/A",

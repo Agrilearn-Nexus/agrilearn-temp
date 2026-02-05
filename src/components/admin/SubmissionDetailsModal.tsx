@@ -81,18 +81,49 @@ export function SubmissionDetailsModal({submission, isOpen, onClose}: ModalProps
                         </div>
 
                         {/* Payment Stats */}
+                        {/* Payment Stats Card */}
                         <div
-                            className="mt-6 space-y-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm shrink-0">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Amount</span>
-                                <span
-                                    className="font-bold text-green-700 font-mono">₹{submission.payment?.amountPaid}</span>
+                            className="mt-6 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden shrink-0">
+                            {/* Header / Plan Name */}
+                            <div className="bg-gray-50 p-3 border-b border-gray-200">
+        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">
+            Selected Plan
+        </span>
+                                <p className="text-sm font-semibold text-gray-900 leading-tight">
+                                    {submission?.submissionDetail || "N/A"}
+                                </p>
                             </div>
-                            <div className="flex justify-between text-sm border-t pt-2">
-                                <span className="text-gray-500">Date</span>
-                                <span
-                                    className="text-gray-800">{submission.payment?.paymentDate ? new Date(submission.payment.paymentDate).toLocaleDateString() : "-"}</span>
+
+                            {/* Body / Amount & Date */}
+                            <div className="p-4 space-y-3">
+                                {/* Amount Row */}
+                                <div className="flex justify-between items-center">
+                                    <div className="flex items-center gap-2 text-gray-500">
+                                        <CreditCard className="w-4 h-4"/>
+                                        <span className="text-xs font-medium">Amount Paid</span>
+                                    </div>
+                                    <span className="text-lg font-bold text-green-700 font-mono">
+                ₹{submission.payment?.amountPaid}
+            </span>
+                                </div>
+
+                                {/* Date Row */}
+                                <div
+                                    className="flex justify-between items-center pt-3 border-t border-dashed border-gray-200">
+                                    <div className="flex items-center gap-2 text-gray-500">
+                                        <Calendar className="w-4 h-4"/>
+                                        <span className="text-xs font-medium">Payment Date</span>
+                                    </div>
+                                    <span className="text-xs font-semibold text-gray-700">
+                {submission.payment?.paymentDate
+                    ? new Date(submission.payment.paymentDate).toLocaleDateString(undefined, {
+                        year: 'numeric', month: 'short', day: 'numeric'
+                    })
+                    : "-"}
+            </span>
+                                </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -162,7 +193,7 @@ export function SubmissionDetailsModal({submission, isOpen, onClose}: ModalProps
                                     <span className="text-sm text-blue-800">Referral Source</span>
                                     <span
                                         className="font-medium text-blue-900 capitalize">{submission.submissionRefference?.type?.toLowerCase().replace("_", " ")}
-                                        {submission.submissionRefference?.type==="PERSON" && submission.submissionRefference?.personName ? ` (${submission.submissionRefference?.personName})` : ""}
+                                        {submission.submissionRefference?.type === "PERSON" && submission.submissionRefference?.personName ? ` (${submission.submissionRefference?.personName})` : ""}
                                     </span>
                                 </div>
                             </div>
