@@ -13,7 +13,7 @@ const HeroSection = () => {
           priority
         />
         {/* Gradient Overlay matching your theme */}
-        <div className="absolute inset-0 bg-linear-to-b from-[#0a2f1c]/90 via-[#0a2f1c]/70 to-[#0a2f1c]/90" />
+        <div className="absolute inset-0 bg-black/70"></div>
       </div>
       
       {/* Content */}

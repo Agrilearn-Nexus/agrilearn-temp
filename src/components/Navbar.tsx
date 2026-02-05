@@ -212,7 +212,10 @@ const Navbar = ({ user }: NavbarProps) => {
               <div className="flex items-center justify-between">
                 <Link
                   href={item.href}
-                  onClick={() => !item.dropdown && setIsOpen(false)}
+                  // --- FIX APPLIED HERE ---
+                  // Changed from `!item.dropdown && setIsOpen(false)` 
+                  // to `setIsOpen(false)` so it always closes on click.
+                  onClick={() => setIsOpen(false)}
                   className="py-4 text-xl font-serif text-white hover:text-[#E8BA30] transition-colors flex-grow"
                 >
                   {item.name}
