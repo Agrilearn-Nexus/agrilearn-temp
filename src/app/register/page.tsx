@@ -19,7 +19,7 @@ import FormHero from "@/components/form/FormHero";
 import {registerSchema, RegisterFormData} from "@/lib/schemas/register";
 
 const RegisterPage = () => {
-    const router = useRouter(); // ✅ hook at top-level
+    const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const methods = useForm<RegisterFormData>({
@@ -29,7 +29,7 @@ const RegisterPage = () => {
     });
 
     const onSubmit = async (data: RegisterFormData) => {
-        if (isSubmitting) return; // ✅ double-submit protection
+        if (isSubmitting) return;
 
         setIsSubmitting(true);
         const toastId = toast.loading("Starting submission...");
@@ -56,15 +56,6 @@ const RegisterPage = () => {
                     headers: {"Content-Type": file.type},
                 });
 
-                // Construct public URL (assuming publicBaseUrl is handled in backend or just sending key)
-                // Actually, sending the key/url to backend is better.
-                // The backend validates and can construct the full URL if needed.
-                // But wait, the backend needs to know which file matches.
-                // Let's send the `key` or the `url` (minus query params).
-
-                // For simplicity, let's send the key, and backend can reconstruct or verify.
-                // But the schema might expect a URL.
-                // Let's assume the backend will construct the URL from the key.
                 receiptUrl = uploadData.key;
             } else {
                 throw new Error("Payment receipt is missing");
@@ -76,7 +67,8 @@ const RegisterPage = () => {
             // Prepare payload (JSON)
             const payload = {
                 ...data,
-                paymentReceipt: receiptUrl, // Overwrite FileList with String Key/URL
+                paymentReceipt: receiptUrl,
+                whatsappGroupJoined: String(data.whatsappGroupJoined),
             };
 
             console.log(`submiting data: `, payload)

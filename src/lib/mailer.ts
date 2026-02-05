@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import { ReactElement } from "react";
 
-const transporter = nodemailer.createTransport({
+export const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com",
     port: parseInt(process.env.SMTP_PORT || "587"),
     secure: false,

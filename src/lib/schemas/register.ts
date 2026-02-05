@@ -37,15 +37,15 @@ export const registerSchema = baseSchema.extend({
             (files) => ACCEPTED_TYPES.includes(files?.[0]?.type),
             "Only JPG, PNG, PDF allowed"
         ),
-    whatsappGroupJoined: z.coerce.string().refine((val) => val === "true", {
-        message: "You must join the WhatsApp group",
+    whatsappGroupJoined: z.literal(true, {
+        message: "You must join the WhatsApp group"
     }),
 });
 
 export const submissionSchema = baseSchema.extend({
     paymentReceipt: z.string().optional(),
 
-    whatsappGroupJoined: z.string().refine((val) => val === "true", {
+    whatsappGroupJoined: z.coerce.string().refine((val) => val === "true", {
         message: "You must join the WhatsApp group",
     }),
 });

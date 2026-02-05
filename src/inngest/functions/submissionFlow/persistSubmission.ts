@@ -42,6 +42,7 @@ export const persistSubmission = inngest.createFunction(
                     email: submissionData.email,
                     phone: submissionData.whatsapp,
                     whatsappNumber: submissionData.whatsapp,
+                    whatsappGroupJoined: submissionData.whatsappGroupJoined,
                     education: submissionData.education,
                     currentDesignation: submissionData.designation,
                     institute: submissionData.college,
