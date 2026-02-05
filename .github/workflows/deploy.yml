@@ -16,7 +16,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 1. Login to GitHub Container Registry
+      - name: Fail early if required secrets missing
+        run: |
+          required=(
+            GOOGLE_CLIENT_ID
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID
+            DATABASE_URL
+            AUTH_SECRET
+            NEXTAUTH_URL
+            SSH_HOST
+            SSH_USERNAME
+            SSH_KEY
+            GITHUB_TOKEN
+          )
+          missing=0
+          for s in "${required[@]}"; do
+            if [ -z "${{ secrets[$s] }}" ]; then
+              echo "ERROR: GitHub Secret $s is not set"
+              missing=1
+            fi
+          done
+          if [ $missing -eq 1 ]; then
+            exit 1
+          fi
+
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -24,7 +47,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 2. Build and Push the Image (Don't build on VPS!)
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -32,8 +54,8 @@ jobs:
           push: true
           build-args: |
             DATABASE_URL=${{ secrets.DATABASE_URL }}
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
           tags: ghcr.io/agrilearn-nexus/agrilearn-temp/app:latest
-
 
       - name: Copy files to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -45,7 +67,6 @@ jobs:
           target: "/home/dev/agrilearn-temp"
           rm: true
 
-      # 3. Deploy to VPS (Only update config and pull)
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -53,21 +74,56 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
             cd /home/dev/agrilearn-temp
-            
+
             # Login on VPS so it can pull the private image
-            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-            # Update .env
-            cat << 'EOF' > .env
-            ${{ secrets.ENV_FILE }}
+            # Write runtime .env from individual secrets (server-only secrets remain in runtime .env)
+            cat > .env <<EOF
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+            ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}
+            NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+            
+            # Google (server side)
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            
+            # Public client id used by browser JS (baked at build time)
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+            
+            # Cloudflare R2 etc (runtime secrets)
+            R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+            R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+            R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
+            R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
+            R2_PUBLIC_BASE_URL=${{ secrets.R2_PUBLIC_BASE_URL }}
+            
+            # SMTP
+            SMTP_HOST=${{ secrets.SMTP_HOST }}
+            SMTP_PORT=${{ secrets.SMTP_PORT }}
+            SMTP_USER=${{ secrets.SMTP_USER }}
+            SMTP_PASS=${{ secrets.SMTP_PASS }}
+            
+            # Postgres
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+            
+            # Inngest (runtime)
+            INNGEST_DEV=${{ secrets.INNGEST_DEV }}
+            INNGEST_SECRET=${{ secrets.INNGEST_SECRET }}
+            INNGEST_EVENT_KEY=${{ secrets.INNGEST_EVENT_KEY }}
+            INNGEST_SIGNING_KEY=${{ secrets.INNGEST_SIGNING_KEY }}
+            INNGEST_BASE_URL=${{ secrets.INNGEST_BASE_URL }}
             EOF
-
+  
             # Pull the new image FIRST (while app is still running)
             docker compose pull
-
+            
             # Restart containers (minimal downtime)
-            # Docker Compose is smart enough to recreate only changed containers
             docker compose up -d
             
             # Cleanup

@@ -19,16 +19,24 @@ RUN \
 # 3. Builder
 FROM base AS builder
 WORKDIR /app
+
+# bring node_modules from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Disable telemetry during the build
+# Accept build-time args for public variables that must be baked into client bundle
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ARG DATABASE_URL
+
+# fail build early if essential build args are missing
+RUN if [ -z "$NEXT_PUBLIC_GOOGLE_CLIENT_ID" ]; then echo "Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID build-arg"; exit 1; fi
+
+# Set build-time args as ENV so Next.js picks them up during `next build`
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ENV DATABASE_URL=$DATABASE_URL
+
+# Disable telemetry and other envs you need during build
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
-ENV R2_ENDPOINT="https://dummy.r2.cloudflarestorage.com"
-ENV R2_ACCESS_KEY_ID="dummy_key_id"
-ENV R2_SECRET_ACCESS_KEY="dummy_secret_key"
-ENV R2_BUCKET_NAME="dummy_bucket"
 
 RUN npx prisma generate
 
