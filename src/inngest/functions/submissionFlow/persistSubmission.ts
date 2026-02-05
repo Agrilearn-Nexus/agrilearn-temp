@@ -6,12 +6,20 @@ import {fileDelete} from "@/utils/operations";
 export const persistSubmission = inngest.createFunction(
     {
         id: "persist-submission",
-        retries: 5,
+        retries: 2,
         onFailure: async ({event, error}) => {
-            console.error("Database persist failed after retries - Cleaning up R2...", error);
-            const key = event.data.event.data.paymentData.paymentReceiptKey;
+            console.error("❌ Database persist failed. Starting cleanup...");
+
+            console.log("🔍 Failure Event Structure:", JSON.stringify(event, null, 2));
+
+            const key = event.data.event.data.paymentReceiptKey;
+            console.log("🗝️ Extracted Key:", key);
             if (key) {
+                console.log(`🗑️ Deleting file from R2: ${key}`);
                 await fileDelete(key);
+                console.log("✅ Deletion complete");
+            } else {
+                console.warn("⚠️ No key found - skipping deletion");
             }
         }
     },
