@@ -19,6 +19,7 @@ services:
       - NEXT_PUBLIC_GOOGLE_CLIENT_ID
       - INNGEST_EVENT_KEY
       - INNGEST_SIGNING_KEY
+      - R2_ACCESS_KEY_ID
 
     depends_on:
       - inngest
