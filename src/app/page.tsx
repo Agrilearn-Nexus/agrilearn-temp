@@ -2,12 +2,16 @@ import Hero from "@/components/homepage/Hero"
 import ServicesSection from "@/components/homepage/ServicesSection"
 import ObjectiveSection from "@/components/homepage/ObjectiveSection"
 import Vision from "@/components/homepage/Vision"
-
 import Image from "next/image"
+import ProgramPopup from "@/components/ProgramPopup" // 1. Import it here
 
 export default function HomePage() {
     return (
         <div className="w-full min-h-screen flex flex-col font-sans">
+            
+            {/* 2. Add the component here. 
+               Since it uses 'fixed' positioning, placing it at the top keeps the DOM structure clean. */}
+            <ProgramPopup />
 
             {/* Hero Section Wrapper */}
             <div className="relative w-full min-h-screen flex flex-col">
