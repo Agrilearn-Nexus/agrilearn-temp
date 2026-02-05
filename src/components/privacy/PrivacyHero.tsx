@@ -1,36 +1,35 @@
 import Image from "next/image";
 
-const EventsHero = () => {
+const PrivacyHero = () => {
   return (
-    <section className="relative h-[65vh] min-h-[500px] flex items-center justify-center overflow-hidden">
-      
+    <section className="relative h-[65vh] min-h-[400px] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/hero-agriculture.jpg"
-          alt="Events Background"
+          src="/privacyHero.jpg"
+          alt="Privacy Policy Background"
           fill
           className="object-cover"
           priority
         />
 
-        {/* ✅ SAME gradient overlay as other heroes */}
+        {/* ✅ SAME gradient overlay as HeroSection */}
         <div className="absolute inset-0 bg-black/50"></div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 text-center">
         <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-widest text-[#E8BA30] bg-[#0a2f1c]/50 rounded-full border border-[#E8BA30]/30 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
-          CALENDAR
+          LEGAL & SECURITY
         </span>
 
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-white mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
-          Agrilearn nexus{" "}
-          <span className="text-[#E8BA30]">Events</span>
+          Privacy <span className="text-[#E8BA30]">Policy</span>
         </h1>
 
         <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-200 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-          Join our workshops, seminars, and training programs designed to empower students, professors, and farmers with cutting-edge agricultural knowledge and practices.
+          Your privacy is important to us. Learn how AgriLearn Nexus protects
+          and manages your personal information.
         </p>
       </div>
 
@@ -52,4 +51,4 @@ const EventsHero = () => {
   );
 };
 
-export default EventsHero;
+export default PrivacyHero;
