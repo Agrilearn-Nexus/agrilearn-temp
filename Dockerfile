@@ -23,6 +23,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+RUN corepack enable && pnpm add -g inngest
+
 # Build-time public/server vars
 ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ARG DATABASE_URL

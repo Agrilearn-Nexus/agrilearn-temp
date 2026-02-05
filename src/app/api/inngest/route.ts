@@ -7,6 +7,4 @@ export const {GET, POST, PUT} = serve({
     functions: [
         ...submissionFunction,
     ],
-    serveHost: process.env.INNGEST_SERVE_HOST,
-    servePath: process.env.INNGEST_SERVE_PATH,
 });
