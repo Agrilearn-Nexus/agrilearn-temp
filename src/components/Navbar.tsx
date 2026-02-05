@@ -18,14 +18,14 @@ const Navbar = ({user}: NavbarProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
     const pathname = usePathname()
-    const isTransparentNav = pathname === "/" || pathname === "/register"
+    const isTransparentNav = pathname === "/" || pathname === "/register" || pathname === "/about" || pathname === "/contact" || pathname === "/events"
     
     const navLinks = [
         {name: "Home", href: "/#home"},
         {name: "Services", href: "/#services"},
         {name: "Objective", href: "/#objective"},
         {name: "Vision", href: "/#vision"},
-        {name: "Contact", href: "/#contact"}
+        {name: "Contact", href: "/contact"}
     ]
 
     useEffect(() => {

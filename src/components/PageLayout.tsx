@@ -8,7 +8,7 @@ export default function PageLayout({children}: { children: React.ReactNode }) {
     const isHomePage = pathname === "/" || pathname === "/register"
 
     return (
-        <div className={`flex-grow flex flex-col w-full ${isHomePage ? "" : "pt-28"}`}>
+        <div className={`grow flex flex-col w-full`}>
             {children}
         </div>
     )

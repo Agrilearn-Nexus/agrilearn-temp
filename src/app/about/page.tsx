@@ -7,8 +7,8 @@ import CTASection from "@/components/about/CTASection";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
-      <main className="flex-grow -mt-[48px]">
+    <div className="min-h-screen bg-gray-50 font-sans flex flex-col overflow-x-hidden">
+      <main className="flex-grow">
         <HeroSection />
         <MissionVision />
         <StatsSection />
