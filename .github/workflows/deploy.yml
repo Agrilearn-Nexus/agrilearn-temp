@@ -18,27 +18,15 @@ jobs:
 
       - name: Fail early if required secrets missing
         run: |
-          required=(
-            GOOGLE_CLIENT_ID
-            NEXT_PUBLIC_GOOGLE_CLIENT_ID
-            DATABASE_URL
-            AUTH_SECRET
-            NEXTAUTH_URL
-            SSH_HOST
-            SSH_USERNAME
-            SSH_KEY
-            GITHUB_TOKEN
-          )
-          missing=0
-          for s in "${required[@]}"; do
-            if [ -z "${{ secrets[$s] }}" ]; then
-              echo "ERROR: GitHub Secret $s is not set"
-              missing=1
-            fi
-          done
-          if [ $missing -eq 1 ]; then
-            exit 1
-          fi
+          if [ -z "${{ secrets.GOOGLE_CLIENT_ID }}" ]; then echo "Missing GOOGLE_CLIENT_ID"; exit 1; fi
+          if [ -z "${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}" ]; then echo "Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID"; exit 1; fi
+          if [ -z "${{ secrets.DATABASE_URL }}" ]; then echo "Missing DATABASE_URL"; exit 1; fi
+          if [ -z "${{ secrets.AUTH_SECRET }}" ]; then echo "Missing AUTH_SECRET"; exit 1; fi
+          if [ -z "${{ secrets.NEXTAUTH_URL }}" ]; then echo "Missing NEXTAUTH_URL"; exit 1; fi
+          if [ -z "${{ secrets.SSH_HOST }}" ]; then echo "Missing SSH_HOST"; exit 1; fi
+          if [ -z "${{ secrets.SSH_USERNAME }}" ]; then echo "Missing SSH_USERNAME"; exit 1; fi
+          if [ -z "${{ secrets.SSH_KEY }}" ]; then echo "Missing SSH_KEY"; exit 1; fi
+
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
