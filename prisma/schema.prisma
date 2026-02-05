@@ -69,7 +69,8 @@ model Submissions {
 
   // personal Details
 
-  name               String @unique
+  submissionDetail   String @default("N/A")
+  name               String
   email              String @unique
   phone              String @unique
   whatsappNumber     String @unique
@@ -115,7 +116,7 @@ model Payment {
   upiImageId  String?
   UpiImageUrl String?
   Submissions Submissions[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  amountPaid  Float         @default(0.0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 }
