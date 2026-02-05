@@ -8,9 +8,9 @@ export const validateSubmission = inngest.createFunction(
         retries: 3,
         onFailure: async ({event, error}) => {
             console.error("Validation failed - - Cleaning up R2...", error);
-            const key = event.data.event.data.paymentData.paymentReceiptKey;
+            const key = event.data.event.data.paymentReceiptKey;
             if (key) {
-                await fileDelete(key);
+                await fileDelete({key});
             }
         }
     },
