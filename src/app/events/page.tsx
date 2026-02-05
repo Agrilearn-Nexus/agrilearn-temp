@@ -9,7 +9,7 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex flex-col pt-1">
       <MarqueeNotification />
-      <main className="flex-grow">
+      <main className="grow">
         <EventsHero />
         <EventsList />
       </main>

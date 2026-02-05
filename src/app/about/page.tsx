@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex flex-col overflow-x-hidden">
       <MarqueeNotification />
-      <main className="flex-grow">
+      <main className="grow">
         <HeroSection />
         <MissionVision />
         <StatsSection />
