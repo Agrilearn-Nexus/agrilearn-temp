@@ -8,7 +8,7 @@ const ContactHero = () => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="/hero-agriculture.jpg"
+          src="/contactHero.png"
           alt="Contact Us Background"
           fill
           className="object-cover"
@@ -16,7 +16,7 @@ const ContactHero = () => {
         />
 
         {/* ✅ SAME gradient overlay as other heroes */}
-        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="absolute inset-0 bg-black/75"></div>
       </div>
 
       {/* Content */}

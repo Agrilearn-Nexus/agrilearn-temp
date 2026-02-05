@@ -7,15 +7,15 @@ const TermsHero = () => {
       {/* Background */}
       <div className="absolute inset-0">
         <Image
-          src="/hero-agriculture.jpg"
+          src="/termsHero.png"
           alt="Terms of Service Background"
           fill
-          className="object-cover"
+          className="object-cover object-bottom"
           priority
         />
 
         {/* ✅ SAME overlay as other heroes */}
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/70" />
       </div>
 
       {/* Content */}
