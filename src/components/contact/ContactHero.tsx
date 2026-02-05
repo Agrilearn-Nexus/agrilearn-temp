@@ -46,19 +46,19 @@ const ContactHero = () => {
           <ContactCard 
             icon={<Phone className="w-6 h-6 text-[#0a2f1c]" />}
             title="Phone"
-            content="+91 98765 43210"
-            href="tel:+919876543210"
+            content="+91 7488468326"
+            href="tel:+917488468326"
           />
           <ContactCard 
             icon={<Mail className="w-6 h-6 text-[#0a2f1c]" />}
             title="Email"
-            content="info@agrilearnnexus.com"
-            href="mailto:info@agrilearnnexus.com"
+            content="support@agrilearnnexus.com"
+            href="mailto:support@agrilearnnexus.com"
           />
           <ContactCard 
             icon={<MapPin className="w-6 h-6 text-[#0a2f1c]" />}
             title="Address"
-            content="Agricultural Hub, New Delhi, India"
+            content="Tilak Nagar Road, Near Manoupchar Kendra, Begusarai, 851101, India"
             isText
           />
         </div>
