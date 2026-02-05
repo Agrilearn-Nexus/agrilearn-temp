@@ -8,6 +8,27 @@ import { CiMail } from "react-icons/ci";
 import { ImYoutube } from "react-icons/im";
 
 const Footer = () => {
+  // Define precise navigation links
+  const quickLinks = [
+    { name: "Home", href: "/" },
+    { name: "About Us", href: "/about" },
+    { name: "Events", href: "/events" },
+    { name: "Services", href: "/services" },
+    { name: "Contact", href: "/contact" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms of Service", href: "/terms" },
+  ];
+
+  // Define service links to match your dynamic routes
+  const serviceLinks = [
+    { name: "Farmer Training", href: "/services/farmer-training" },
+    { name: "Workshops", href: "/services/workshops" },
+    { name: "Research", href: "/services/research" },
+    { name: "Consultancy", href: "/services/consultancy" },
+    { name: "Publications", href: "/services/publications" },
+    { name: "Digital Learning", href: "/services/digital-learning" },
+  ];
+
   return (
     <footer
       id="contact"
@@ -69,20 +90,13 @@ const Footer = () => {
             Quick Links
           </h1>
           <div className="flex flex-col gap-2">
-            {[
-              "Home",
-              "About Us",
-              "Events",
-              "Services",
-              "Magazine",
-              "Contact",
-            ].map((link) => (
+            {quickLinks.map((link) => (
               <Link
-                key={link}
-                href={`/${link === "Home" ? "" : link.split(" ")[0].toLowerCase()}`}
+                key={link.name}
+                href={link.href}
                 className="w-fit hover:text-[#E0B732] hover:translate-x-1 transition-transform duration-300"
               >
-                {link}
+                {link.name}
               </Link>
             ))}
           </div>
@@ -94,20 +108,13 @@ const Footer = () => {
             Our Services
           </h1>
           <div className="flex flex-col gap-2">
-            {[
-              "Farmer Training",
-              "Workshops",
-              "Research",
-              "Consultancy",
-              "Publications",
-              "Digital Learning",
-            ].map((item) => (
+            {serviceLinks.map((item) => (
               <Link
-                key={item}
-                href="/"
+                key={item.name}
+                href={item.href}
                 className="w-fit hover:text-[#E0B732] hover:translate-x-1 transition-transform duration-300"
               >
-                {item}
+                {item.name}
               </Link>
             ))}
           </div>
@@ -125,7 +132,7 @@ const Footer = () => {
               className="text-[#E0B732] shrink-0 mt-1"
             />
             <a
-              href="https://www.google.com/maps/search/?api=1&query=Tilak+Nagar+Road,+Near+Manoupchar+Kendra,+Begusarai,+Bihar,+India"
+              href="https://maps.google.com"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-[#E0B732] transition-colors leading-snug"

@@ -17,15 +17,17 @@ interface NavbarProps {
 const Navbar = ({ user }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
-  const isTransparentNav =
-    pathname === "/" ||
-    pathname === "/register" ||
-    pathname === "/about" ||
-    pathname === "/contact" ||
-    pathname === "/events" ||
-    pathname === "/privacy-policy" ||
-    pathname === "/terms"; // Add this line
+  // Inside src/components/Navbar.tsx
+// Inside Navbar.tsx
+const pathname = usePathname();
+const isTransparentNav = pathname === "/" || 
+                         pathname === "/register" || 
+                         pathname === "/about" || 
+                         pathname === "/contact" || 
+                         pathname === "/events" || 
+                         pathname === "/privacy-policy" || 
+                         pathname === "/terms" || 
+                         pathname.startsWith("/services");
 
   const navLinks = [
     { name: "Home", href: "/#home" },
