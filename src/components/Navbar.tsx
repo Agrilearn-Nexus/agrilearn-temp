@@ -63,9 +63,11 @@
         : "bg-green-950/95 backdrop-blur-md shadow-lg py-3";
 
     return (
-      <nav
-        className={`fixed top-0 left-0 w-full z-100 transition-all duration-300 ${navbarBgClass}`}
-      >
+      <nav 
+            /* ADDED: style prop to read the variable */
+            style={{ top: 'var(--marquee-height, 0px)' }}
+            className={`fixed left-0 w-full z-[100] transition-all duration-300 ${navbarBgClass}`}
+        >
         <div className="container mx-auto flex justify-between items-center px-4 md:px-8 text-white relative z-50">
           <Link href="/" className="flex gap-3 items-center group">
             <div className="relative w-10 h-10 overflow-hidden rounded-full border-2 border-white/20 group-hover:border-[#E8BA30] transition-colors">

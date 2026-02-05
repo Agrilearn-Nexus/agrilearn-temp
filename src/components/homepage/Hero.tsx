@@ -4,7 +4,11 @@ import Link from "next/link";
 
 const Hero = () => {
   return (
-    <div className="w-11/12 md:w-10/12 mx-auto flex flex-col items-center justify-center text-white gap-6 md:gap-8 pt-18 md:pt-26">
+    // CHANGED: Reduced to 'pt-24' (Mobile) and 'pt-36' (Desktop)
+    // This removes the large gap while keeping content clear of the navbar.
+    <div className="w-11/12 md:w-10/12 mx-auto flex flex-col items-center justify-center text-white gap-6 md:gap-8 pt-24 md:pt-36">
+      
+      {/* This is the badge/pill component */}
       <div className="animate-fade-in-up px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 w-fit flex items-center gap-2 text-sm md:text-base font-medium shadow-lg">
         <span className="w-2.5 h-2.5 rounded-full bg-[#E8BA30] animate-pulse"></span>
         Transforming Agriculture Through Education
@@ -36,15 +40,14 @@ const Hero = () => {
         </Link>
 
         <Link
-  href="https://www.youtube.com/@agrilearnnexus"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="group text-lg font-semibold py-3 px-8 border border-white/40 bg-white/5 backdrop-blur-sm rounded-xl flex items-center justify-center gap-2 hover:bg-white hover:text-black transition-all duration-300 hover:scale-105"
->
-  <CiPlay1 className="group-hover:scale-110 transition-transform duration-300" />
-  Watch Our Story
-</Link>
-
+          href="https://www.youtube.com/@agrilearnnexus"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group text-lg font-semibold py-3 px-8 border border-white/40 bg-white/5 backdrop-blur-sm rounded-xl flex items-center justify-center gap-2 hover:bg-white hover:text-black transition-all duration-300 hover:scale-105"
+        >
+          <CiPlay1 className="group-hover:scale-110 transition-transform duration-300" />
+          Watch Our Story
+        </Link>
       </div>
 
       <div className="animate-fade-in-up delay-300 grid grid-cols-2 md:grid-cols-4 gap-4 w-full mt-8 md:mt-10">

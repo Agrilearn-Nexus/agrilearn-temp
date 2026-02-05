@@ -111,7 +111,7 @@ const RegisterPage = () => {
             <Toaster position="top-right"/>
 
             {/* Hero Section */}
-            <div className="relative w-full min-h-screen flex flex-col">
+            <div className="relative w-full min-h-screen md:pb-12 flex flex-col">
                 <div className="absolute inset-0 z-0">
                     <Image
                         src="/formHeaderHero.png"
