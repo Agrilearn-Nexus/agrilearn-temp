@@ -1,20 +1,24 @@
-import { inngest } from "@/inngest/client";
-import { validateForm } from "@/lib/validators";
+import {inngest} from "@/inngest/client";
+import {validateForm} from "@/lib/validators";
+import {fileDelete} from "@/utils/operations";
 
 export const validateSubmission = inngest.createFunction(
     {
         id: "validate-submission",
         retries: 3,
-        onFailure: async ({ event, error }) => {
-            console.error("Validation failed:", error);
-            // Could implement admin notification here
+        onFailure: async ({event, error}) => {
+            console.error("Validation failed - - Cleaning up R2...", error);
+            const key = event.data.event.data.paymentData.paymentReceiptKey;
+            if (key) {
+                await fileDelete(key);
+            }
         }
     },
-    { event: "submission.received" },
-    async ({ event, step }) => {
+    {event: "submission.received"},
+    async ({event, step}) => {
 
         const validatedData = await step.run("schema-validation", async () => {
-            const { submissionData, paymentData, receiptUrl } = event.data;
+            const {submissionData, paymentData, receiptUrl} = event.data;
 
             const rawData = {
                 ...submissionData,
@@ -34,6 +38,6 @@ export const validateSubmission = inngest.createFunction(
             },
         });
 
-        return { success: true };
+        return {success: true};
     }
 );

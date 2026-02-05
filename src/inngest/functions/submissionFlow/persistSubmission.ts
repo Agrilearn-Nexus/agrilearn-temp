@@ -1,19 +1,24 @@
-import { inngest } from "@/inngest/client";
-import { prisma } from "@/lib/prisma";
-import { ReferenceType } from "@/.generated/enums";
+import {inngest} from "@/inngest/client";
+import {prisma} from "@/lib/prisma";
+import {ReferenceType} from "@/.generated/enums";
+import {fileDelete} from "@/utils/operations";
 
 export const persistSubmission = inngest.createFunction(
     {
         id: "persist-submission",
         retries: 5,
-        onFailure: async ({ event, error }) => {
-            console.error("Persist failed:", error);
+        onFailure: async ({event, error}) => {
+            console.error("Database persist failed after retries - Cleaning up R2...", error);
+            const key = event.data.event.data.paymentData.paymentReceiptKey;
+            if (key) {
+                await fileDelete(key);
+            }
         }
     },
-    { event: "submission.validated" },
+    {event: "submission.validated"},
 
-    async ({ event, step }) => {
-        const { submissionData, paymentReceipt, paymentReceiptKey } = event.data;
+    async ({event, step}) => {
+        const {submissionData, paymentReceipt, paymentReceiptKey} = event.data;
 
         const record = await step.run("db-save", async () => {
             let refType: ReferenceType = "WEBSITE";
@@ -74,6 +79,6 @@ export const persistSubmission = inngest.createFunction(
             },
         });
 
-        return { success: true, id: record.id };
+        return {success: true, id: record.id};
     }
 );

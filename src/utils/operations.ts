@@ -1,5 +1,5 @@
-import { DeleteObjectCommand, PutObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
-import { bucketName, r2, publicBaseUrl } from "@/lib/r2";
+import {DeleteObjectCommand, PutObjectCommand, HeadObjectCommand} from "@aws-sdk/client-s3";
+import {bucketName, r2, publicBaseUrl} from "@/lib/r2";
 
 /**
  * Represents a file upload payload
@@ -32,19 +32,25 @@ export const fileUpload = async ({
 
     const url = `${publicBaseUrl}/${key}`;
 
-    return { key, url };
+    return {key, url};
 };
 
 /**
  * Delete file from R2
  */
-export const fileDelete = async ({ key }: { key: string }): Promise<void> => {
-    await r2.send(
-        new DeleteObjectCommand({
+export const fileDelete = async ({key}: { key: string }): Promise<void> => {
+    if (!key) return;
+
+    try {
+        console.log(`Attempting to delete orphaned file: ${key}`);
+        await r2.send(new DeleteObjectCommand({
             Bucket: bucketName,
             Key: key,
-        })
-    );
+        }));
+        console.log(`Successfully deleted from R2: ${key}`);
+    } catch (error) {
+        console.error(`Failed to delete from R2: ${key}`, error);
+    }
 };
 
 /**
