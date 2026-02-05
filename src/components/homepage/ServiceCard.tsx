@@ -8,7 +8,8 @@ const ServiceCard = ({ value }: { value: any }) => {
   return (
     <Link 
       href={`/services/${slug}`}
-      className="group w-full flex flex-col gap-6 p-8 bg-[#F9F9F5] rounded-2xl relative overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(46,96,65,0.15)] hover:-translate-y-2 border border-transparent hover:border-[#E8BA30]/20 cursor-pointer block"
+      // REMOVED "block" from the end of the class list below
+      className="group w-full flex flex-col gap-6 p-8 bg-[#F9F9F5] rounded-2xl relative overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(46,96,65,0.15)] hover:-translate-y-2 border border-transparent hover:border-[#E8BA30]/20 cursor-pointer"
     >
       <div className="absolute -right-12 -top-12 w-40 h-40 bg-[#F3F3EC] rounded-full z-0 group-hover:bg-[#E8BA30]/10 group-hover:scale-150 transition-all duration-700 ease-in-out"></div>
 
