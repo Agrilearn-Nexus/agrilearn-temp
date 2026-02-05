@@ -39,6 +39,7 @@ export const persistSubmission = inngest.createFunction(
                     district: submissionData.district,
                     postalCode: submissionData.postalCode,
                     state: submissionData.state,
+                    submissionDetail: submissionData.feeDetails,
 
                     payment: {
                         create: {
@@ -46,6 +47,7 @@ export const persistSubmission = inngest.createFunction(
                             paymentDate: new Date(submissionData.paymentDate),
                             UpiImageUrl: paymentReceipt,
                             upiImageId: paymentReceiptKey || null,
+                            amountPaid: submissionData.amountPaid,
                         }
                     },
 
