@@ -12,7 +12,7 @@ const MissionVision = () => {
             <div className="absolute -inset-4 bg-gradient-to-br from-[#E8BA30]/20 to-[#0a2f1c]/20 rounded-3xl blur-2xl" />
             <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-2xl">
                <Image 
-                 src="/hero-agriculture.jpg" 
+                 src="/about-whoWeAre.jpg" 
                  alt="Mission"
                  fill
                  className="object-cover"

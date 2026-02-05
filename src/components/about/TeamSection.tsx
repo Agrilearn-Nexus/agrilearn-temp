@@ -42,7 +42,7 @@ const TeamSection = () => {
         </div>
         
         {/* Featured Team Image */}
-        <div className="relative mb-20 max-w-5xl mx-auto h-[400px] rounded-3xl overflow-hidden shadow-2xl">
+        {/* <div className="relative mb-20 max-w-5xl mx-auto h-[400px] rounded-3xl overflow-hidden shadow-2xl">
            <Image 
              src="/vision-background.jpg" 
              alt="Team"
@@ -50,7 +50,7 @@ const TeamSection = () => {
              className="object-cover"
            />
            <div className="absolute inset-0 bg-[#0a2f1c]/20"></div>
-        </div>
+        </div> */}
         
         {/* Team Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
