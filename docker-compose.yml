@@ -20,6 +20,8 @@ services:
       - INNGEST_EVENT_KEY
       - INNGEST_SIGNING_KEY
       - R2_ACCESS_KEY_ID
+      - INNGEST_SERVE_HOST
+      - INNGEST_SERVE_PATH
 
     depends_on:
       - inngest

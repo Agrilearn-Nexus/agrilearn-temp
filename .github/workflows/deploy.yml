@@ -98,6 +98,8 @@ jobs:
             INNGEST_EVENT_KEY=${{ secrets.INNGEST_EVENT_KEY }}
             INNGEST_SIGNING_KEY=${{ secrets.INNGEST_SIGNING_KEY }}
             INNGEST_BASE_URL=${{ secrets.INNGEST_BASE_URL }}
+            INNGEST_SERVE_HOST=http://app:3000
+            INNGEST_SERVE_PATH=/api/inngest
             EOF
   
             docker compose pull
