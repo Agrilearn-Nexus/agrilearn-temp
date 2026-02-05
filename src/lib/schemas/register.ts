@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_TYPES = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
@@ -37,7 +37,7 @@ export const registerSchema = baseSchema.extend({
             (files) => ACCEPTED_TYPES.includes(files?.[0]?.type),
             "Only JPG, PNG, PDF allowed"
         ),
-    whatsappGroupJoined: z.boolean().refine((val) => val, {
+    whatsappGroupJoined: z.coerce.string().refine((val) => val === "true", {
         message: "You must join the WhatsApp group",
     }),
 });

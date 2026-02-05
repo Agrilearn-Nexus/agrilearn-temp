@@ -69,20 +69,21 @@ model Submissions {
 
   // personal Details
 
-  submissionDetail   String @default("N/A")
-  name               String
-  email              String @unique
-  phone              String @unique
-  whatsappNumber     String @unique
-  education          String
-  currentDesignation String
-  institute          String
-  organization       String
-  address            String
-  city               String
-  district           String
-  postalCode         String
-  state              String
+  submissionDetail    String  @default("N/A")
+  name                String
+  email               String  @unique
+  phone               String  @unique
+  whatsappNumber      String  @unique
+  whatsappGroupJoined Boolean @default(false)
+  education           String
+  currentDesignation  String
+  institute           String
+  organization        String
+  address             String
+  city                String
+  district            String
+  postalCode          String
+  state               String
 
   // reference
   submissionRefference  SubmissionReference @relation(fields: [submissionReferenceId], references: [id])
