@@ -122,7 +122,7 @@ const Footer = () => {
           <div className="flex gap-3 items-start">
             <IoLocationOutline
               size={28}
-              className="text-[#E0B732] flex-shrink-0 mt-1"
+              className="text-[#E0B732] shrink-0 mt-1"
             />
             <a
               href="https://www.google.com/maps/search/?api=1&query=Tilak+Nagar+Road,+Near+Manoupchar+Kendra,+Begusarai,+Bihar,+India"
@@ -135,7 +135,7 @@ const Footer = () => {
           </div>
 
           <div className="flex gap-3 items-center">
-            <IoCallOutline size={22} className="text-[#E0B732] flex-shrink-0" />
+            <IoCallOutline size={22} className="text-[#E0B732] shrink-0" />
             <a
               href="tel:+917488468326"
               className="hover:text-[#E0B732] transition-colors"
@@ -145,7 +145,7 @@ const Footer = () => {
           </div>
 
           <div className="flex gap-3 items-center">
-            <CiMail size={24} className="text-[#E0B732] flex-shrink-0" />
+            <CiMail size={24} className="text-[#E0B732] shrink-0" />
             <a
               href="mailto:support@agrilearnnexus.com"
               className="hover:text-[#E0B732] transition-colors break-all"

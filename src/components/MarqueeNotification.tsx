@@ -48,7 +48,7 @@ const MarqueeNotification = () => {
 
       <div
         ref={marqueeRef}
-        className="fixed top-0 left-0 w-full bg-[#E8BA30] text-[#0a2f1c] overflow-hidden py-3 z-[110] shadow-md border-b border-[#0a2f1c]/10"
+        className="fixed top-0 left-0 w-full bg-[#E8BA30] text-[#0a2f1c] overflow-hidden py-3 z-110 shadow-md border-b border-[#0a2f1c]/10"
       >
         <div className="flex w-full whitespace-nowrap overflow-hidden select-none marquee-container">
           {/* Track 1 */}

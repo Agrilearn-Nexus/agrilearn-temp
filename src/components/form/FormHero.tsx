@@ -20,7 +20,7 @@ const FormHero = () => {
         Empowering Education, Research & Agriculture
       </p>
       
-      <p className="animate-fade-in-up delay-200 text-lg md:text-xl lg:text-2xl w-full md:w-3/4 lg:w-2/3 text-center text-white leading-relaxed font-light text-gray-100/90">
+      <p className="animate-fade-in-up delay-200 text-lg md:text-xl lg:text-2xl w-full md:w-3/4 lg:w-2/3 text-center leading-relaxed font-light text-gray-100/90">
         Join leading researchers, educators, and professionals from around the
         world for three days of knowledge sharing, networking, and innovation in
         agricultural sciences.

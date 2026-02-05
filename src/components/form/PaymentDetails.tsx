@@ -142,7 +142,7 @@ const PaymentDetails = () => {
 
           <div className="overflow-hidden rounded-lg border border-gray-200 mb-8">
             <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse min-w-[500px]">
+                <table className="w-full text-left border-collapse min-w-125">
                 <thead>
                     <tr className="bg-[#3F7A5A] text-white">
                     <th className="p-4 font-semibold text-sm uppercase tracking-wide border-r border-[#3F7A5A]/50">

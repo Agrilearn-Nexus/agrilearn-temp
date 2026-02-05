@@ -37,7 +37,7 @@ export default function HomePage() {
                        MarqueeNotification component now handles its own positioning 
                        and pushes the navbar down automatically. */}
 
-                    <div className="flex-grow flex items-center justify-center py-12 md:py-0">
+                    <div className="grow flex items-center justify-center py-12 md:py-0">
                         <Hero />
                     </div>
                 </div>

@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const TermsHero = () => {
   return (
-    <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+    <section className="relative h-[60vh] min-h-125 flex items-center justify-center overflow-hidden">
       
       {/* Background */}
       <div className="absolute inset-0">
