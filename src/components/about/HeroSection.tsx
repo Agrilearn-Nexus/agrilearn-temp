@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const HeroSection = () => {
   return (
-    <section className="relative h-[60vh] min-h-125 flex items-center justify-center overflow-hidden">
+    <section className="relative h-[65vh] min-h-125 flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
