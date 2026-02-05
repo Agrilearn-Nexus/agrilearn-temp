@@ -8,15 +8,13 @@ import { CiMail } from "react-icons/ci";
 import { ImYoutube } from "react-icons/im";
 
 const Footer = () => {
-  // Define precise navigation links
   const quickLinks = [
     { name: "Home", href: "/" },
     { name: "About Us", href: "/about" },
     { name: "Events", href: "/events" },
     { name: "Services", href: "/services" },
     { name: "Contact", href: "/contact" },
-    { name: "Privacy Policy", href: "/privacy-policy" },
-    { name: "Terms of Service", href: "/terms" },
+    { name: "Magazine", href: "/magazine" },
   ];
 
   // Define service links to match your dynamic routes

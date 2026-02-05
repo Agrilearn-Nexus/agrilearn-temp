@@ -18,16 +18,19 @@ const Navbar = ({ user }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   // Inside src/components/Navbar.tsx
-// Inside Navbar.tsx
-const pathname = usePathname();
-const isTransparentNav = pathname === "/" || 
-                         pathname === "/register" || 
-                         pathname === "/about" || 
-                         pathname === "/contact" || 
-                         pathname === "/events" || 
-                         pathname === "/privacy-policy" || 
-                         pathname === "/terms" || 
-                         pathname.startsWith("/services");
+  // Inside Navbar.tsx
+  const pathname = usePathname();
+  const isTransparentNav =
+    pathname === "/" ||
+    pathname === "/register" ||
+    pathname === "/about" ||
+    pathname === "/contact" ||
+    pathname === "/events" ||
+    pathname === "/privacy-policy" ||
+    pathname === "/terms" ||
+    pathname.startsWith("/services") ||
+    pathname === "/magazine" ||
+    pathname.startsWith("/magazine/");
 
   const navLinks = [
     { name: "Home", href: "/#home" },
