@@ -20,9 +20,6 @@ services:
       - INNGEST_EVENT_KEY
       - INNGEST_SIGNING_KEY
 
-    networks:
-      - agri_network
-
     depends_on:
       - inngest
 
@@ -38,13 +35,10 @@ services:
       - .env
 
     environment:
-      - INNGEST_DEV=0
+      - INNGEST_DEV
       - INNGEST_SIGNING_KEY
       - INNGEST_EVENT_KEY
 
-    networks:
-      - agri_network
-
 networks:
-  agri_network:
+  default:
     driver: bridge

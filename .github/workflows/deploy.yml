@@ -2,50 +2,42 @@ name: Deploy to VPS
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Fail early if required secrets missing
+      - name: Validate secrets
         run: |
-          if [ -z "${{ secrets.GOOGLE_CLIENT_ID }}" ]; then echo "Missing GOOGLE_CLIENT_ID"; exit 1; fi
-          if [ -z "${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}" ]; then echo "Missing NEXT_PUBLIC_GOOGLE_CLIENT_ID"; exit 1; fi
-          if [ -z "${{ secrets.DATABASE_URL }}" ]; then echo "Missing DATABASE_URL"; exit 1; fi
-          if [ -z "${{ secrets.AUTH_SECRET }}" ]; then echo "Missing AUTH_SECRET"; exit 1; fi
-          if [ -z "${{ secrets.NEXTAUTH_URL }}" ]; then echo "Missing NEXTAUTH_URL"; exit 1; fi
-          if [ -z "${{ secrets.SSH_HOST }}" ]; then echo "Missing SSH_HOST"; exit 1; fi
-          if [ -z "${{ secrets.SSH_USERNAME }}" ]; then echo "Missing SSH_USERNAME"; exit 1; fi
-          if [ -z "${{ secrets.SSH_KEY }}" ]; then echo "Missing SSH_KEY"; exit 1; fi
+          test -n "${{ secrets.GOOGLE_CLIENT_ID }}"
+          test -n "${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}"
+          test -n "${{ secrets.DATABASE_URL }}"
+          test -n "${{ secrets.AUTH_SECRET }}"
+          test -n "${{ secrets.NEXTAUTH_URL }}"
 
-
-      - name: Log in to the Container registry
+      - name: Login GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build & Push Image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          build-args: |
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
           tags: ghcr.io/agrilearn-nexus/agrilearn-temp/app:latest
+          build-args: |
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
 
-      - name: Copy files to VPS
+      - name: Copy Repo to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -55,7 +47,7 @@ jobs:
           target: "/home/dev/agrilearn-temp"
           rm: true
 
-      - name: Deploy to VPS
+      - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -65,42 +57,33 @@ jobs:
             set -e
             cd /home/dev/agrilearn-temp
 
-            # Login on VPS so it can pull the private image
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-            # Write runtime .env from individual secrets (server-only secrets remain in runtime .env)
             cat > .env <<EOF
             DATABASE_URL=${{ secrets.DATABASE_URL }}
             AUTH_SECRET=${{ secrets.AUTH_SECRET }}
             ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}
             NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
             
-            # Google (server side)
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-            
-            # Public client id used by browser JS (baked at build time)
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
             
-            # Cloudflare R2 etc (runtime secrets)
             R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
             R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
             R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
             R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
             R2_PUBLIC_BASE_URL=${{ secrets.R2_PUBLIC_BASE_URL }}
             
-            # SMTP
             SMTP_HOST=${{ secrets.SMTP_HOST }}
             SMTP_PORT=${{ secrets.SMTP_PORT }}
             SMTP_USER=${{ secrets.SMTP_USER }}
             SMTP_PASS=${{ secrets.SMTP_PASS }}
             
-            # Postgres
             POSTGRES_USER=${{ secrets.POSTGRES_USER }}
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             POSTGRES_DB=${{ secrets.POSTGRES_DB }}
             
-            # Inngest (runtime)
             INNGEST_DEV=${{ secrets.INNGEST_DEV }}
             INNGEST_SECRET=${{ secrets.INNGEST_SECRET }}
             INNGEST_EVENT_KEY=${{ secrets.INNGEST_EVENT_KEY }}
@@ -108,11 +91,6 @@ jobs:
             INNGEST_BASE_URL=${{ secrets.INNGEST_BASE_URL }}
             EOF
   
-            # Pull the new image FIRST (while app is still running)
             docker compose pull
-            
-            # Restart containers (minimal downtime)
             docker compose up -d
-            
-            # Cleanup
             docker image prune -f
