@@ -2,8 +2,6 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 
 const FormHero = () => {
   return (
-    // UPDATED: Removed 'pt-32' so mobile stays centered. 
-    // Added 'md:pt-44' to push content down ONLY on tablets & laptops.
     <div className="w-11/12 md:w-10/12 mx-auto flex flex-col items-center justify-center text-white gap-6 md:gap-8 md:pt-44">
       
       <div className="animate-fade-in-up px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 w-fit flex items-center gap-2 text-sm md:text-base font-medium shadow-lg">
