@@ -123,8 +123,8 @@ const Navbar = ({ user }: NavbarProps) => {
           </h2>
         </Link>
 
-        {/* DESKTOP MENU */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* DESKTOP MENU - CHANGED md:flex TO lg:flex TO HIDE ON TABLET */}
+        <div className="hidden lg:flex items-center gap-8">
           <div className="flex gap-1">
             {navLinks.map((item) => (
               <div key={item.name} className="relative group">
@@ -186,8 +186,8 @@ const Navbar = ({ user }: NavbarProps) => {
           </div>
         </div>
 
-        {/* MOBILE TOGGLE */}
-        <div className="md:hidden">
+        {/* MOBILE TOGGLE - CHANGED md:hidden TO lg:hidden TO SHOW ON TABLET */}
+        <div className="lg:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-white focus:outline-none p-2"
@@ -213,9 +213,6 @@ const Navbar = ({ user }: NavbarProps) => {
               <div className="flex items-center justify-between">
                 <Link
                   href={item.href}
-                  // --- FIX APPLIED HERE ---
-                  // Changed from `!item.dropdown && setIsOpen(false)` 
-                  // to `setIsOpen(false)` so it always closes on click.
                   onClick={() => setIsOpen(false)}
                   className="py-4 text-xl font-serif text-white hover:text-[#E8BA30] transition-colors flex-grow"
                 >
