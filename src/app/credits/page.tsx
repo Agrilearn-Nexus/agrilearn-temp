@@ -42,32 +42,41 @@ const Credits = () => {
         </div> */}
 
         {/* Hero Content */}
-        <div className="container relative z-10 max-w-6xl mx-auto text-center flex-grow flex flex-col justify-center pb-32">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E8BA30]/20 border border-[#E8BA30]/30 mb-6 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-[#E8BA30]" />
-              <span className="text-[#E8BA30] text-sm font-bold">
-                Website Credits
-              </span>
-            </div>
+        <div className="container relative z-10 max-w-6xl mx-auto 
+                px-4 sm:px-6 md:px-0
+                text-center flex-grow flex flex-col justify-center pb-32">
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.6 }}
+  >
+    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E8BA30]/20 border border-[#E8BA30]/30 mb-6 backdrop-blur-sm">
+      <Sparkles className="w-4 h-4 text-[#E8BA30]" />
+      <span className="text-[#E8BA30] text-sm font-bold">
+        Website Credits
+      </span>
+    </div>
 
-            <h1 className="text-4xl md:text-6xl font-serif font-bold leading-tight text-white">
-              Crafted with <span className="text-[#E8BA30]">Passion</span>
-              <br />
-              by Our Development Team
-            </h1>
+    <h1 className="text-3xl sm:text-4xl md:text-6xl 
+                   font-serif font-bold 
+                   leading-snug md:leading-tight 
+                   text-white break-words">
+      Crafted with <span className="text-[#E8BA30]">Passion</span>
+      <br className="hidden sm:block" />
+      by Our Development Team
+    </h1>
 
-            <p className="text-gray-200 text-lg mt-6 max-w-2xl mx-auto leading-relaxed">
-              This website was designed and developed by our talented team. We
-              specialize in creating beautiful, high-performance digital
-              experiences.
-            </p>
-          </motion.div>
-        </div>
+    <p className="text-gray-200 text-base sm:text-lg 
+                  mt-5 sm:mt-6 
+                  max-w-2xl mx-auto 
+                  leading-relaxed px-2 sm:px-0">
+      This website was designed and developed by our talented team. We
+      specialize in creating beautiful, high-performance digital
+      experiences.
+    </p>
+  </motion.div>
+</div>
+
 
         {/* ===== SVG WAVE DIVIDER ===== */}
         <div className="absolute bottom-0 left-0 right-0 z-20">
@@ -217,7 +226,7 @@ const Credits = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="mailto:contact@company.com"
+                href="mailto:aryanak9163@gmail.com"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#E8BA30] text-[#16261E] font-bold hover:bg-white transition-all"
               >
                 <Mail className="w-4 h-4" />
@@ -225,7 +234,7 @@ const Credits = () => {
               </a>
 
               <a
-                href="tel:+919999999999"
+                href="tel:+918235172505"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/30 hover:bg-white/10 transition-all"
               >
                 <Phone className="w-4 h-4" />
