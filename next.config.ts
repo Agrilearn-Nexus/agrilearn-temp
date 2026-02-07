@@ -2,7 +2,7 @@ import type {NextConfig} from "next";
 
 const nextConfig: NextConfig = {
     reactCompiler: true,
-     output: "standalone",
+    output: process.platform === "win32" ? undefined : "standalone",
     images: {
         remotePatterns: [
             {

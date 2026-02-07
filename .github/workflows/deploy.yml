@@ -98,8 +98,11 @@ jobs:
             INNGEST_EVENT_KEY=${{ secrets.INNGEST_EVENT_KEY }}
             INNGEST_SIGNING_KEY=${{ secrets.INNGEST_SIGNING_KEY }}
             INNGEST_BASE_URL=${{ secrets.INNGEST_BASE_URL }}
+            INNGEST_SERVE_HOST=https://agrilearnnexus.com
+            INNGEST_SERVE_PATH=/api/inngest
             EOF
   
             docker compose pull
             docker compose up -d
+            docker compose exec -T app npx @inngest/cli apps sync -u || true
             docker image prune -f
