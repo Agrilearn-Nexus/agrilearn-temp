@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const TermsHero = () => {
   return (
-    <section className="relative h-[60vh] min-h-125 flex items-center justify-center overflow-hidden">
+    <section className="relative h-[70vh] min-h-125 flex items-center justify-center overflow-hidden">
       
       {/* Background */}
       <div className="absolute inset-0">
@@ -15,7 +15,8 @@ const TermsHero = () => {
         />
 
         {/* ✅ SAME overlay as other heroes */}
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-[#0a2f1c]/80 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       {/* Content */}

@@ -12,7 +12,8 @@ const MagazineHero = () => {
           priority
         />
         
-        <div className="absolute inset-0 bg-black/70"></div>
+        <div className="absolute inset-0 bg-[#0a2f1c]/80 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       {/* Content */}

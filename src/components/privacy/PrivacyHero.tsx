@@ -2,7 +2,7 @@ import Image from "next/image";
 
 const PrivacyHero = () => {
   return (
-    <section className="relative h-[65vh] min-h-100 flex items-center justify-center overflow-hidden">
+    <section className="relative h-[70vh] min-h-100 flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -14,7 +14,8 @@ const PrivacyHero = () => {
         />
 
         {/* ✅ SAME gradient overlay as HeroSection */}
-        <div className="absolute inset-0 bg-black/70"></div>
+        <div className="absolute inset-0 bg-[#0a2f1c]/80 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       {/* Content */}

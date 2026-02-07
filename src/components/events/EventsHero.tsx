@@ -15,7 +15,8 @@ const EventsHero = () => {
         />
 
         {/* ✅ SAME gradient overlay as other heroes */}
-        <div className="absolute inset-0 bg-black/50"></div>
+        <div className="absolute inset-0 bg-[#0a2f1c]/80 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       {/* Content */}
