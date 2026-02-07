@@ -70,7 +70,8 @@ const Navbar = ({ user }: NavbarProps) => {
     pathname === "/terms" ||
     pathname.startsWith("/services") ||
     pathname === "/magazine" ||
-    pathname.startsWith("/magazine/");
+    pathname.startsWith("/magazine/") ||
+    pathname.startsWith("/credits");
 
   useEffect(() => {
     const handleScroll = () => {
