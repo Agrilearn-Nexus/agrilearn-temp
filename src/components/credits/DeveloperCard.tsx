@@ -33,9 +33,9 @@ export interface Developer {
 export const developers: Developer[] = [
   {
     name: "Aryan Kumar",
-    role: "Backend Lead · PixelStack Technologies",
+    role: "Backend Engineer · Arks Labs",
     image: "/aryan-kumar.jpg",
-    bio: "Backend Lead at PixelStack Technologies, Aryan developed the backend architecture of the AgriLearn Nexus website. He worked on APIs, database integration, performance optimization, and scalable system design to ensure a secure and reliable platform.",
+    bio: "Backend Engineer at Arks Labs, Aryan developed the backend architecture of the AgriLearn Nexus website. He worked on APIs, database integration, performance optimization, and scalable system design to ensure a secure and reliable platform.",
     skills: [
       { icon: <Server className="w-4 h-4" />, label: "Backend Development" },
       { icon: <Code2 className="w-4 h-4" />, label: "API & System Design" },
@@ -50,9 +50,9 @@ export const developers: Developer[] = [
   },
   {
     name: "Aditya Singh",
-    role: "Frontend Lead · PixelStack Technologies",
+    role: "Frontend Engineer · Arks Labs",
     image: "/aditya-singh.jpg",
-    bio: "Frontend Lead at PixelStack Technologies, Aditya designed and developed the frontend of the AgriLearn Nexus website. He focused on modern UI/UX design, responsive layouts, and smooth user interactions to deliver a polished and engaging user experience.",
+    bio: "Frontend Engineer at Arks Labs, Aditya designed and developed the frontend of the AgriLearn Nexus website. He focused on modern UI/UX design, responsive layouts, and smooth user interactions to deliver a polished and engaging user experience.",
     skills: [
       { icon: <Palette className="w-4 h-4" />, label: "Frontend Development" },
       { icon: <Code2 className="w-4 h-4" />, label: "UI/UX Design" },
@@ -63,6 +63,7 @@ export const developers: Developer[] = [
     github: "https://github.com/aditya-singhOfficial",
   },
 ];
+
 
 const DeveloperCard = ({
   developer,

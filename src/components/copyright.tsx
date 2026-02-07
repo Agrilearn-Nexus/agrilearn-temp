@@ -19,7 +19,7 @@ const Copyright = () => {
                      transition-all duration-300 order-3 md:order-2"
         >
           <Code2 className="w-4 h-4" />
-          Designed & Developed by PixelStack Technologies
+          Designed & Developed by Arks Labs
         </Link>
 
         {/* Legal Links */}
