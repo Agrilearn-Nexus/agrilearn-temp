@@ -1,20 +1,17 @@
 # ---------- Base ----------
 FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@10.28.1 --activate
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 # ---------- Dependencies ----------
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json package-lock.json* yarn.lock* pnpm-lock.yaml* ./
+COPY package.json pnpm-lock.yaml* ./
 COPY prisma ./prisma
-
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+RUN pnpm i --frozen-lockfile
 
 # ---------- Builder ----------
 FROM base AS builder
@@ -23,7 +20,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN corepack enable && pnpm add -g inngest
 
 # Build-time public/server vars
 ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
