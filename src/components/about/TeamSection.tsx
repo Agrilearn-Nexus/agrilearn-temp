@@ -8,23 +8,15 @@ const team = [
     bio: "Bsc in Agricultural Sciences with 2+ years of experience in sustainable farming research.",
     linkedin: "https://www.linkedin.com/",
     twitter: "https://twitter.com/",
-    email: "mailto:madhav@agrilearnnexus.com"
+    email: "mailto:support@agrilearnnexus.com"
   },
   { 
     name: "Satyam Kumar", 
     role: "C.E.O", 
     bio: "Visionary leader driving strategic partnerships and business growth to revolutionize agricultural education.",
-    linkedin: "https://www.linkedin.com/",
+    linkedin: "https://www.linkedin.com/in/satyam-kumar-793b20250/",
     twitter: "https://twitter.com/",
-    email: "mailto:satyam@agrilearnnexus.com"
-  },
-  { 
-    name: "Aryan Kumar", 
-    role: "C.T.O", 
-    bio: "Tech innovator spearheading the development of cutting-edge digital platforms and scalable learning solutions.",
-    linkedin: "https://www.linkedin.com/",
-    twitter: "https://twitter.com/",
-    email: "mailto:aryan@agrilearnnexus.com"
+    email: "mailto:satyamsinghbgs90@gmail.com"
   },
 ];
 
