@@ -1,8 +1,8 @@
 # ---------- Base ----------
 FROM node:20-alpine AS base
 RUN corepack enable && corepack prepare pnpm@10.28.1 --activate
-ENV PNPM_HOME="/pnpm"ENV
-PATH="$PNPM_HOME:$PATH"
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 # ---------- Dependencies ----------
 FROM base AS deps
