@@ -8,12 +8,12 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       disallow: [
-        "/admin/",      // Keep admin private
-        "/api/",        // Keep API private
-        "/dashboard/",  // Keep user dashboard private
+        "/admin/",      
+        "/api/",        
+        "/dashboard/",  
         "/private/",
       ],
     },
-    sitemap: `${baseUrl}/sitemap.xml`, // This URL is still correct
+    sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

@@ -15,10 +15,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/register",
     "/privacy-policy",
     "/terms",
+    "/credits", 
   ];
 
-  // 2. Hardcoded Services (Based on your Navbar)
-  // Since these aren't in your DB, we list them manually
+ 
   const serviceRoutes = [
     "/services/farmer-training",
     "/services/workshops",
@@ -28,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/services/digital-learning",
   ];
 
-  // 3. Generate entries
+
   const staticEntries = staticRoutes.map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
