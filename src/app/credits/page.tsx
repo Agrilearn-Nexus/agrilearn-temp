@@ -1,16 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Code2, Globe, Sparkles, Mail, Phone } from "lucide-react";
+import { Code2, Globe, Sparkles, Mail, Phone } from "lucide-react";
 import DeveloperCard, { developers } from "@/components/credits/DeveloperCard";
 
 const Credits = () => {
   return (
     <div className="w-full min-h-screen bg-gray-50 text-gray-900 pb-20">
       {/* ================= HERO SECTION ================= */}
-      <section className="relative w-full min-h-[600px] flex flex-col overflow-hidden pt-24">
+      <section className="relative w-full min-h-[540px] flex flex-col overflow-hidden pt-20">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
@@ -23,62 +22,44 @@ const Credits = () => {
           <div className="absolute inset-0 bg-black/60" />
         </div>
 
-        {/* Navigation */}
-        {/* <div className="container relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-6 flex items-center justify-between">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-gray-300 hover:text-[#E8BA30] transition-colors duration-300 text-sm font-medium"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
-
-          <div className="flex items-center gap-2 opacity-90">
-            <Code2 className="w-5 h-5 text-[#E8BA30]" />
-            <span className="font-serif font-bold text-gray-100 text-sm">
-              Built by Our Team
-            </span>
-          </div>
-        </div> */}
-
         {/* Hero Content */}
         <div className="container relative z-10 max-w-6xl mx-auto 
-                px-4 sm:px-6 md:px-0
-                text-center flex-grow flex flex-col justify-center pb-32">
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.6 }}
-  >
-    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E8BA30]/20 border border-[#E8BA30]/30 mb-6 backdrop-blur-sm">
-      <Sparkles className="w-4 h-4 text-[#E8BA30]" />
-      <span className="text-[#E8BA30] text-sm font-bold">
-        Website Credits
-      </span>
-    </div>
+            px-4 sm:px-6 md:px-0
+            text-center flex-grow flex flex-col justify-center
+            pb-24 md:pb-28">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E8BA30]/20 border border-[#E8BA30]/30 mb-6 backdrop-blur-sm">
+              <Sparkles className="w-4 h-4 text-[#E8BA30]" />
+              <span className="text-[#E8BA30] text-sm font-bold">
+                Website Credits
+              </span>
+            </div>
 
-    <h1 className="text-3xl sm:text-4xl md:text-6xl 
-                   font-serif font-bold 
-                   leading-snug md:leading-tight 
-                   text-white break-words">
-      Crafted with <span className="text-[#E8BA30]">Passion</span>
-      <br className="hidden sm:block" />
-      by Our Development Team
-    </h1>
+            <h1 className="text-3xl sm:text-4xl md:text-6xl 
+                font-serif font-bold 
+                leading-snug md:leading-tight 
+                text-white">
+              Crafted with <span className="text-[#E8BA30]">Passion</span>
+              <br className="hidden sm:block" />
+              by Our Development Team
+            </h1>
 
-    <p className="text-gray-200 text-base sm:text-lg 
-                  mt-5 sm:mt-6 
-                  max-w-2xl mx-auto 
-                  leading-relaxed px-2 sm:px-0">
-      This website was designed and developed by our talented team. We
-      specialize in creating beautiful, high-performance digital
-      experiences.
-    </p>
-  </motion.div>
-</div>
+            <p className="text-gray-200 text-base sm:text-lg 
+                mt-5 sm:mt-6 
+                max-w-2xl mx-auto 
+                leading-relaxed">
+              This website was designed and developed by our talented team.
+              We specialize in creating beautiful, high-performance digital
+              experiences.
+            </p>
+          </motion.div>
+        </div>
 
-
-        {/* ===== SVG WAVE DIVIDER ===== */}
+        {/* SVG Divider */}
         <div className="absolute bottom-0 left-0 right-0 z-20">
           <svg
             viewBox="0 0 1440 120"
@@ -95,14 +76,14 @@ const Credits = () => {
       </section>
 
       {/* ================= DEVELOPERS ================= */}
-      <section className="py-16 px-6 bg-white border-y border-gray-100">
-        <div className="container max-w-8xl mx-auto">
+      <section className="py-14 md:py-16 px-6 bg-white border-y border-gray-100">
+        <div className="container max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-10"
           >
             <h2 className="text-2xl md:text-3xl font-serif font-bold">
               Meet the <span className="text-[#E8BA30]">Builders</span>
@@ -121,71 +102,69 @@ const Credits = () => {
       </section>
 
       {/* ================= WORK SHOWCASE ================= */}
-      <section className="py-24 px-6">
-        <div className="container max-w-8xl mx-auto">
+      <section className="py-20 md:py-24 px-6">
+        <div className="container max-w-7xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 32 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.7 }}
             viewport={{ once: true }}
-            className="rounded-2xl bg-white border border-gray-200 p-10 md:p-16 shadow-lg"
+            className="rounded-2xl bg-white border border-gray-200 p-10 md:p-14 shadow-lg"
           >
             <h2 className="text-2xl md:text-3xl font-serif font-bold text-center text-[#2E6041]">
               What We <span className="text-[#E8BA30]">Delivered</span>
             </h2>
 
-
-            <p className="max-w-3xl mx-auto mt-3 mb-14 text-center text-gray-600 leading-relaxed">
+            <p className="max-w-3xl mx-auto mt-4 mb-10 text-center text-gray-600 leading-relaxed">
               From design to deployment, our focus remained on clean
               architecture, modern interaction patterns, and a future-ready
               technology stack.
             </p>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-10">
               {[
                 {
                   icon: <Globe className="w-7 h-7" />,
                   title: "Responsive Website",
-                  desc: "Optimized for all devices, ensuring consistent layouts and smooth performance on mobiles, tablets, and desktops.",
+                  desc: "Optimized for all devices with consistent layouts and smooth performance.",
                   extra:
-                    "Carefully tested across screen sizes to maintain readability, usability, and visual balance.",
+                    "Carefully tested across screen sizes for usability and balance.",
                 },
                 {
                   icon: <Sparkles className="w-7 h-7" />,
                   title: "Modern UI/UX",
-                  desc: "A clean, minimal interface combined with subtle animations for a polished and engaging experience.",
+                  desc: "Minimal interface with subtle animations for polished interaction.",
                   extra:
-                    "Designed with user behavior in mind to reduce friction and improve overall interaction flow.",
+                    "Designed to reduce friction and improve user flow.",
                 },
                 {
                   icon: <Code2 className="w-7 h-7" />,
                   title: "Clean Codebase",
-                  desc: "Structured and maintainable code built using modern best practices and scalable patterns.",
+                  desc: "Maintainable, scalable code using modern best practices.",
                   extra:
-                    "Powered by Next.js and Tailwind CSS to ensure speed, flexibility, and future extensibility.",
+                    "Built with Next.js and Tailwind CSS.",
                 },
               ].map((item, i) => (
                 <motion.div
                   key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.15 }}
                   viewport={{ once: true }}
                   className="text-center p-8 rounded-xl bg-gray-50 border border-gray-100 hover:border-[#E8BA30]/30 transition-colors"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-[#E8BA30]/10 flex items-center justify-center mx-auto mb-6 text-[#E8BA30]">
+                  <div className="w-14 h-14 rounded-xl bg-[#E8BA30]/10 flex items-center justify-center mx-auto mb-5 text-[#E8BA30]">
                     {item.icon}
                   </div>
 
-                  <h3 className="font-serif font-semibold text-lg mb-4">
+                  <h3 className="font-serif font-semibold text-lg mb-3">
                     {item.title}
                   </h3>
 
-                  <p className="text-sm text-gray-600 leading-relaxed mb-3">
+                  <p className="text-sm text-gray-600 leading-relaxed mb-2">
                     {item.desc}
                   </p>
 
-                  {/* 🔹 Extra content line */}
                   <p className="text-sm text-gray-500 leading-relaxed">
                     {item.extra}
                   </p>
@@ -193,12 +172,10 @@ const Credits = () => {
               ))}
             </div>
 
-            {/* 🔹 Bottom summary content */}
-            <div className="mt-16 text-center">
+            <div className="mt-12 text-center">
               <p className="max-w-3xl mx-auto text-gray-600 leading-relaxed">
                 The final outcome is a reliable, visually consistent, and
-                scalable solution that aligns with modern web standards and
-                supports future enhancements.
+                scalable solution aligned with modern web standards.
               </p>
             </div>
           </motion.div>
@@ -206,20 +183,20 @@ const Credits = () => {
       </section>
 
       {/* ================= CONTACT CTA ================= */}
-      <section className="py-8 px-6">
-        <div className="container w-full mx-auto">
+      <section className="py-12 px-6">
+        <div className="container max-w-6xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="rounded-2xl bg-[#2E6041] text-white p-8 md:p-12 text-center border-2 border-[#E8BA30]/20"
+            className="rounded-2xl bg-[#2E6041] text-white p-10 md:p-12 text-center border-2 border-[#E8BA30]/20"
           >
             <h2 className="text-2xl md:text-3xl font-serif font-bold mb-4">
               Want a Website Like This?
             </h2>
 
-            <p className="text-gray-200 max-w-lg mx-auto mb-8">
+            <p className="text-gray-200 max-w-lg mx-auto mb-7">
               We build stunning, high-performance websites for modern
               businesses.
             </p>

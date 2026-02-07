@@ -57,24 +57,37 @@ const Footer = () => {
           </p>
 
           {/* Social Links */}
+          {/* Social Links */}
           <div className="flex gap-4 mt-2">
             {[
               {
                 icon: <FaFacebookSquare size={24} />,
-                url: "https://facebook.com",
+                url: "https://www.facebook.com/agrilearn.nexus",
+                label: "Facebook",
               },
-              { icon: <FaXTwitter size={24} />, url: "https://twitter.com" },
-              { icon: <SiLinkedin size={24} />, url: "https://linkedin.com" },
-              { icon: <FaInstagram size={24} />, url: "https://instagram.com" },
-              { icon: <ImYoutube size={24} />, url: "https://youtube.com" },
+              {
+                icon: <FaInstagram size={24} />,
+                url: "https://www.instagram.com/agrilearn.nexus",
+                label: "Instagram",
+              },
+              {
+                icon: <SiLinkedin size={22} />,
+                url: "https://www.linkedin.com/in/agrilearn-nexus-9ab0513ab/",
+                label: "LinkedIn",
+              },
+              {
+                icon: <ImYoutube size={24} />,
+                url: "https://www.youtube.com/@agrilearnnexus",
+                label: "YouTube",
+              },
             ].map((social, index) => (
               <a
                 key={index}
                 href={social.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={social.label}
                 className="text-[#FBFBF8] hover:text-[#E0B732] hover:scale-110 transition-all duration-300"
-                aria-label="social-link"
               >
                 {social.icon}
               </a>
