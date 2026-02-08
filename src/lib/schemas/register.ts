@@ -45,8 +45,8 @@ export const registerSchema = baseSchema.extend({
 export const submissionSchema = baseSchema.extend({
     paymentReceipt: z.string().optional(),
 
-    whatsappGroupJoined: z.coerce.string().refine((val) => val === "true", {
-        message: "You must join the WhatsApp group",
+    whatsappGroupJoined: z.literal(true, {
+        message: "You must join the WhatsApp group"
     }),
 });
 
