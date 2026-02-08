@@ -9,7 +9,16 @@ export const notifySubmission = inngest.createFunction(
         id: "notify-submission",
         retries: 3,
         onFailure: async ({event, error}) => {
+            const {submissionId} = event.data.event.data;
             console.error("❌ Notification failed:", error);
+            if (submissionId) {
+                await prisma.submissions.update({
+                    where: {id: submissionId},
+                    data: {
+                        failureReason: `Email Sending Failed: ${error.message}`
+                    }
+                });
+            }
         }
     },
     {event: "submission.persisted"},

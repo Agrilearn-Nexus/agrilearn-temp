@@ -17,7 +17,10 @@ export const validateSubmission = inngest.createFunction(
             if (dbId) {
                 await prisma.submissions.update({
                     where: {id: dbId},
-                    data: {status: SubmissionStatus.FAILED}
+                    data: {
+                        status: SubmissionStatus.FAILED,
+                        failureReason: `Validation Error: ${error.message}`
+                    },
                 });
             }
         }
