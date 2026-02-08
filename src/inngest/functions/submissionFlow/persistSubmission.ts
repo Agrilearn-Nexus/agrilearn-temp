@@ -1,6 +1,6 @@
 import {inngest} from "@/inngest/client";
 import {prisma} from "@/lib/prisma";
-import {ReferenceType} from "@/.generated/enums";
+import {ReferenceType, SubmissionStatus} from "@/.generated/enums";
 import {fileDelete} from "@/utils/operations";
 
 export const persistSubmission = inngest.createFunction(
@@ -8,27 +8,25 @@ export const persistSubmission = inngest.createFunction(
         id: "persist-submission",
         retries: 5,
         onFailure: async ({event, error}) => {
-            console.error("❌ Database persist failed. Starting cleanup...");
+            console.error("❌ Database persist failed.", error);
+            const {paymentReceiptKey, dbId} = event.data.event.data;
 
-            console.log("🔍 Failure Event Structure:", JSON.stringify(event, null, 2));
+            if (paymentReceiptKey) await fileDelete({key: paymentReceiptKey});
 
-            const key = event.data.event.data.paymentReceiptKey;
-            console.log("🗝️ Extracted Key:", key);
-            if (key) {
-                console.log(`🗑️ Deleting file from R2: ${key}`);
-                await fileDelete({key});
-                console.log("✅ Deletion complete");
-            } else {
-                console.warn("⚠️ No key found - skipping deletion");
+            if (dbId) {
+                await prisma.submissions.update({
+                    where: {id: dbId},
+                    data: {status: SubmissionStatus.FAILED}
+                });
             }
         }
     },
     {event: "submission.validated"},
 
     async ({event, step}) => {
-        const {submissionData, paymentReceipt, paymentReceiptKey} = event.data;
+        const {submissionData, paymentReceipt, paymentReceiptKey, dbId} = event.data;
 
-        const record = await step.run("db-save", async () => {
+        const record = await step.run("db-update-relations", async () => {
             let refType: ReferenceType = "WEBSITE";
             let refName = "NA";
             let refDesignation = "NA";
@@ -43,25 +41,10 @@ export const persistSubmission = inngest.createFunction(
                 refDesignation = submissionData.referredPersonDesignation?.trim() || "UNKNOWN";
             }
 
-            return prisma.submissions.create({
+            return prisma.submissions.update({
+                where: {id: dbId},
                 data: {
-                    name: submissionData.fullName,
-                    email: submissionData.email,
-                    phone: submissionData.whatsapp,
-                    whatsappNumber: submissionData.whatsapp,
                     whatsappGroupJoined: submissionData.whatsappGroupJoined,
-                    education: submissionData.education,
-                    currentDesignation: submissionData.designation,
-                    institute: submissionData.college,
-                    organization: submissionData.university,
-
-                    address: submissionData.postalAddress,
-                    city: submissionData.city,
-                    district: submissionData.district,
-                    postalCode: submissionData.postalCode,
-                    state: submissionData.state,
-                    submissionDetail: submissionData.feeDetails,
-
                     payment: {
                         create: {
                             upiId: submissionData.upiId || "N/A",
@@ -84,10 +67,10 @@ export const persistSubmission = inngest.createFunction(
                                 type: refType,
                                 personName: refName,
                                 personDesignation: refDesignation,
-
                             }
                         }
-                    }
+                    },
+                    status: SubmissionStatus.SAVED
                 },
                 include: {
                     payment: true
@@ -101,6 +84,7 @@ export const persistSubmission = inngest.createFunction(
                 submissionId: record.id,
                 email: record.email,
                 name: record.name,
+                humanId: record.submissionId
             },
         });
 

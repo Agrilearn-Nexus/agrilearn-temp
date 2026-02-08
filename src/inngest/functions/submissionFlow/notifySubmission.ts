@@ -1,29 +1,39 @@
 import {inngest} from "@/inngest/client";
 import {sendEmail} from "@/lib/mailer";
 import SubmissionSuccessEmail from "@/emails/SubmissionSuccessEmail";
+import {prisma} from "@/lib/prisma";
+import {SubmissionStatus} from "@/.generated/enums";
 
 export const notifySubmission = inngest.createFunction(
     {
         id: "notify-submission",
         retries: 3,
-        onFailure: async ({ event, error }) => {
-            console.error("Notification failed:", error);
+        onFailure: async ({event, error}) => {
+            console.error("❌ Notification failed:", error);
         }
     },
     {event: "submission.persisted"},
 
     async ({event, step}) => {
-        const {email, submissionId, fullName, certificateType} = event.data;
+        const {email, submissionId, name, humanId} = event.data;
 
+        // 1. Send the Email
         await step.run("send-welcome-email", async () => {
             await sendEmail({
                 to: email,
-                subject: "Registration Received - AgriLearn Nexus",
+                subject: "Registration Confirmed - AgriLearn Nexus",
                 template: SubmissionSuccessEmail({
-                    fullName: fullName || "User",
-                    submissionId: submissionId,
-                    certificateType: certificateType || "General",
+                    fullName: name || "User",
+                    submissionId: humanId || submissionId,
+                    certificateType: "General Participation",
                 }),
+            });
+        });
+
+        await step.run("mark-confirmed", async () => {
+            await prisma.submissions.update({
+                where: {id: submissionId},
+                data: {status: SubmissionStatus.COMPLETED}
             });
         });
 

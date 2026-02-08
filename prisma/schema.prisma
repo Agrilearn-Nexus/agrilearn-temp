@@ -15,6 +15,15 @@ enum ReferenceType {
   MAIL
 }
 
+enum SubmissionStatus {
+  PROCESSING
+  VALIDATING
+  SAVED
+  FAILED
+  COMPLETED
+  PAYMENT_VERIFIED
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String?
@@ -65,8 +74,11 @@ model VerificationToken {
 }
 
 model Submissions {
-  id String @id @unique @default(uuid(7))
+  id           String @id @unique @default(uuid(7))
+  submissionId String @unique
 
+  status        SubmissionStatus @default(PROCESSING)
+  failureReason String?
   // personal Details
 
   submissionDetail    String  @default("N/A")
@@ -127,4 +139,9 @@ model Payment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model EventCounter {
+  year  Int @id
+  value Int @default(0)
 }
