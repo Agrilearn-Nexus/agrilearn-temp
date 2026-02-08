@@ -1,16 +1,17 @@
 "use client";
 
-import {useState} from "react";
+import {useState, useTransition} from "react";
 import * as XLSX from "xlsx";
 import {saveAs} from "file-saver";
-import {Download, Eye, Filter, Search} from "lucide-react";
+import {Download, Eye, Filter, LoaderCircle, Search, Trash, Trash2} from "lucide-react";
 import {SubmissionDetailsModal} from "./SubmissionDetailsModal";
+import {deleteSubmission} from "@/actions/admin"
 
 export function SubmissionTable({data}: { data: any[] }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sourceFilter, setSourceFilter] = useState("ALL");
     const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
-
+    const [isPending, startTransition] = useTransition();
     const filteredData = data.filter((item) => {
         const term = searchTerm.toLowerCase();
         const matchesSearch =
@@ -172,9 +173,24 @@ export function SubmissionTable({data}: { data: any[] }) {
                             <td className="px-6 py-4 text-right">
                                 <button
                                     onClick={() => setSelectedSubmission(row)}
-                                    className="p-2 text-gray-400 hover:text-[#0a2f1c] hover:bg-green-100 rounded-lg transition-all"
+                                    className="p-2  rounded-lg transition-all"
                                 >
-                                    <Eye className="w-5 h-5"/>
+                                    <Eye className="w-5 h-5 mr-1 hover:text-[#0a2f1c] hover:cursor-pointer"/>
+                                </button>
+                                <button
+                                    onClick={() =>
+                                        startTransition(async () => {
+                                            await deleteSubmission(row.id)
+                                        })
+                                    }
+                                    className="p-2 rounded-lg transition-all"
+                                >
+                                    {isPending ?
+                                        <LoaderCircle
+                                            className="w-5 h-5 mr-1 hover:text-rose-700 hover:cursor-pointer"/>
+                                        :
+                                        <Trash2 className="w-5 h-5 mr-1 hover:text-rose-700 hover:cursor-pointer"/>
+                                    }
                                 </button>
                             </td>
                         </tr>

@@ -30,11 +30,18 @@ export const persistSubmission = inngest.createFunction(
 
         const record = await step.run("db-save", async () => {
             let refType: ReferenceType = "WEBSITE";
+            let refName = "NA";
+            let refDesignation = "NA";
             const source = submissionData.referenceSource?.toUpperCase() || "";
 
             if (source.includes("WHATSAPP")) refType = "WHATSAPP_GROUP";
             else if (source.includes("SOCIAL")) refType = "SOCAIL_MEDIA";
             else if (source.includes("PERSON") || submissionData.referredPerson) refType = "PERSON";
+
+            if (refType === "PERSON") {
+                refName = submissionData.referredPerson?.trim() || "UNKNOWN";
+                refDesignation = submissionData.referredPersonDesignation?.trim() || "UNKNOWN";
+            }
 
             return prisma.submissions.create({
                 data: {
@@ -60,16 +67,25 @@ export const persistSubmission = inngest.createFunction(
                             upiId: submissionData.upiId || "N/A",
                             paymentDate: new Date(submissionData.paymentDate),
                             UpiImageUrl: paymentReceipt,
-                            upiImageId: paymentReceiptKey || null,
+                            upiImageId: paymentReceiptKey,
                             amountPaid: parseFloat(submissionData.amountPaid),
                         }
                     },
 
-                    submissionRefference: {
-                        create: {
-                            type: refType,
-                            personName: submissionData.referredPerson || null,
-                            personDesignation: null // Optional in schema
+                    submissionReference: {
+                        connectOrCreate: {
+                            where: {
+                                type_personName: {
+                                    type: refType,
+                                    personName: refName,
+                                }
+                            },
+                            create: {
+                                type: refType,
+                                personName: refName,
+                                personDesignation: refDesignation,
+
+                            }
                         }
                     }
                 },

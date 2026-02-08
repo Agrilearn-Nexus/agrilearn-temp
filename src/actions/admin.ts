@@ -6,18 +6,36 @@ import {fileDelete} from "@/utils/operations";
 
 export async function deleteSubmission(id: string) {
     try {
-        const submission = await prisma.submissions.findUnique({
-            where: {id},
-            include: {payment: true}
-        });
 
-        if (!submission) return {success: false, error: "Submission not found"};
+        await prisma.$transaction(async (tx) => {
+            const submission = await tx.submissions.findUnique({
+                where: {id},
+                include: {payment: true}
+            });
 
-        await prisma.submissions.delete({
-            where: {id}
-        });
+            if (!submission) throw new Error("Submission not found");
 
-        await fileDelete({key: submission?.payment?.upiImageId!})
+            const referenceId = submission.submissionReferenceId;
+            const receiptKey = submission.payment?.upiImageId;
+
+            await tx.submissions.delete({where: {id}});
+
+            const count = await tx.submissions.count({
+                where: {submissionReferenceId: referenceId}
+            })
+
+            if (count === 0) {
+                await tx.submissionReference.delete({
+                    where: {
+                        id: referenceId
+                    }
+                })
+            }
+
+            if (receiptKey) {
+                await fileDelete({key: receiptKey})
+            }
+        })
 
         revalidatePath("/admin/dashboard");
         return {success: true};

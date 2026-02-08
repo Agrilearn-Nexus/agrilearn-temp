@@ -1,16 +1,16 @@
 import {config} from "dotenv"
+import path from "path";
 
-config({
-    path: process.cwd() + '/.env'
-})
+config()
 import {defineConfig, env} from "prisma/config"
 
 export default defineConfig({
-    schema: process.cwd() + '/prisma/schema.prisma',
+    schema: path.join(process.cwd() + '/prisma/schema.prisma'),
     migrations: {
-        path: process.cwd() + '/prisma/migrations',
+        path: path.join(process.cwd() + '/prisma/migrations'),
+
     },
     datasource: {
-        url: env('DATABASE_URL') || `postgresql://user:pass@localhost:5432/db`
+        url: env('DATABASE_URL')
     }
 })

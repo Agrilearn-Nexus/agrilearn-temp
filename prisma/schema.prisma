@@ -86,19 +86,21 @@ model Submissions {
   state               String
 
   // reference
-  submissionRefference  SubmissionReference @relation(fields: [submissionReferenceId], references: [id])
+  submissionReference   SubmissionReference @relation(fields: [submissionReferenceId], references: [id])
   submissionReferenceId String
 
   // payments record
-  payment   Payment @relation(fields: [paymentId], references: [id])
-  paymentId String
+  payment Payment?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([submissionReferenceId])
 }
 
 model SubmissionReference {
-  id                String        @id @unique @default(uuid(7))
+  id String @id @unique @default(uuid(7))
+
   type              ReferenceType
   personName        String?
   personDesignation String?
@@ -107,17 +109,22 @@ model SubmissionReference {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([type, personName])
   @@index([type])
 }
 
 model Payment {
-  id          String        @id @unique @default(uuid(7))
+  id String @id @unique @default(uuid(7))
+
   upiId       String
   paymentDate DateTime
   upiImageId  String?
   UpiImageUrl String?
-  Submissions Submissions[]
-  amountPaid  Float         @default(0.0)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  amountPaid  Float    @default(0.0)
+
+  submissionId String      @unique
+  submission   Submissions @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

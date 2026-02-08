@@ -10,7 +10,7 @@ export default async function AdminDashboard() {
 
     const submissions = await prisma.submissions.findMany({
         orderBy: {createdAt: "desc"},
-        include: {payment: true, submissionRefference: true},
+        include: {payment: true, submissionReference: true},
     });
 
     const totalStudents = submissions.length;
