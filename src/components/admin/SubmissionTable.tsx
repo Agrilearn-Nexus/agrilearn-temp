@@ -3,9 +3,20 @@
 import {useState, useTransition} from "react";
 import * as XLSX from "xlsx";
 import {saveAs} from "file-saver";
-import {Download, Eye, Filter, LoaderCircle, Search, Trash, Trash2} from "lucide-react";
+import {
+    AlertCircle,
+    CheckCircle,
+    Clock,
+    Download,
+    Eye,
+    Filter,
+    LoaderCircle,
+    Search, Send,
+    Trash,
+    Trash2
+} from "lucide-react";
 import {SubmissionDetailsModal} from "./SubmissionDetailsModal";
-import {deleteSubmission} from "@/actions/admin"
+import {deleteSubmission, resendSubmissionEmail} from "@/actions/admin"
 
 export function SubmissionTable({data}: { data: any[] }) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -59,6 +70,33 @@ export function SubmissionTable({data}: { data: any[] }) {
 
     const getInitials = (name: string) => name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase();
 
+    const getStatusBadge = (status: string, reason?: string) => {
+        switch (status) {
+            case "COMPLETED":
+                return <span
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700"><CheckCircle
+                    className="w-3 h-3"/> DONE</span>;
+            case "FAILED":
+                return <span title={reason}
+                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 text-red-700 cursor-help"><AlertCircle
+                    className="w-3 h-3"/> FAILED</span>;
+            case "PROCESSING":
+            case "VALIDATING":
+                return <span
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700"><Clock
+                    className="w-3 h-3"/> PROCESSING</span>;
+            case "SAVED":
+                // Saved means DB is good, but Email might have failed (if reason exists) or hasn't sent yet
+                if (reason) return <span title={reason}
+                                         className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700 cursor-help"><AlertCircle
+                    className="w-3 h-3"/> EMAIL ERROR</span>;
+                return <span
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-yellow-100 text-yellow-700">SAVED</span>;
+            default:
+                return <span className="text-gray-500 text-xs">{status}</span>;
+        }
+    };
+
     return (
         <>
             {/* TOOLBAR */}
@@ -109,6 +147,7 @@ export function SubmissionTable({data}: { data: any[] }) {
                         <th className="px-6 py-4 font-semibold tracking-wider">Education</th>
                         <th className="px-6 py-4 font-semibold tracking-wider">Source</th>
                         <th className="px-6 py-4 font-semibold tracking-wider">Selected Plan</th>
+                        <th className="px-6 py-4 font-semibold tracking-wider">Status</th>
                         <th className="px-6 py-4 text-right">Action</th>
                     </tr>
                     </thead>
@@ -166,30 +205,46 @@ export function SubmissionTable({data}: { data: any[] }) {
                                 </div>
                             </td>
 
+                            {/* Status */}
+
+                            <td className="px-6 py-4">
+                                <div className="flex flex-col gap-1">
+                                    {getStatusBadge(row.status, row.failureReason)}
+                                    {row.failureReason && (
+                                        <span className="text-[10px] text-red-500 max-w-[150px] truncate"
+                                              title={row.failureReason}>
+                                                  {row.failureReason}
+                                           </span>
+                                    )}
+                                </div>
+                            </td>
 
                             {/* Action */}
                             <td className="px-6 py-4 text-right">
-                                <button
-                                    onClick={() => setSelectedSubmission(row)}
-                                    className="p-2  rounded-lg transition-all"
-                                >
-                                    <Eye className="w-5 h-5 mr-1 hover:text-[#0a2f1c] hover:cursor-pointer"/>
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        startTransition(async () => {
-                                            await deleteSubmission(row.id)
-                                        })
-                                    }
-                                    className="p-2 rounded-lg transition-all"
-                                >
-                                    {isPending ?
-                                        <LoaderCircle
-                                            className="w-5 h-5 mr-1 hover:text-rose-700 hover:cursor-pointer"/>
-                                        :
-                                        <Trash2 className="w-5 h-5 mr-1 hover:text-rose-700 hover:cursor-pointer"/>
-                                    }
-                                </button>
+                                <div className="flex justify-end gap-1">
+                                    {/* Manual Resend Email Button (Only show if not completed or if there is an error) */}
+                                    {(row.status !== "COMPLETED" || row.failureReason) && (
+                                        <button
+                                            onClick={() => startTransition(async () =>{
+                                                await resendSubmissionEmail(row.id)
+                                            } )}
+                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                            title="Resend Confirmation Email"
+                                        >
+                                            <Send className="w-5 h-5" />
+                                        </button>
+                                    )}
+
+                                    <button onClick={() => setSelectedSubmission(row)} className="p-2 rounded-lg transition-all">
+                                        <Eye className="w-5 h-5 hover:text-[#0a2f1c]" />
+                                    </button>
+
+                                    <button onClick={() => startTransition(async () => {
+                                        await deleteSubmission(row.id)
+                                    })} className="p-2 rounded-lg transition-all">
+                                        <Trash2 className="w-5 h-5 hover:text-rose-700" />
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     ))}
