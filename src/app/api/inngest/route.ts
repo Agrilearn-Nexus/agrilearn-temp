@@ -1,13 +1,13 @@
-import {serve} from "inngest/next";
-import {inngest} from "@/inngest/client";
-import {functions as submissionFunction} from "@/inngest/functions/submissionFlow";
+import { serve } from "inngest/next";
+import { inngest } from "@/inngest/client";
+import { functions as submissionFunction } from "@/inngest/functions/submissionFlow";
 
-export const {GET, POST, PUT} = serve({
+export const { GET, POST, PUT } = serve({
     client: inngest,
     functions: [
         ...submissionFunction,
     ],
-    streaming:"allow",
-    serveHost:process.env.INNGEST_SERVE_HOST,
-    servePath:process.env.INNGEST_SERVE_PATH,
+    streaming: "allow",
+    serveHost: process.env.INNGEST_SERVE_HOST,
+    servePath: process.env.INNGEST_SERVE_PATH,
 });
