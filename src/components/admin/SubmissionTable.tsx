@@ -45,8 +45,8 @@ export function SubmissionTable({data}: { data: any[] }) {
             "UPI ID": item.payment?.upiId || "N/A",
             "Receipt URL": item.payment?.UpiImageUrl || "N/A",
 
-            "Reference Source": item.submissionRefference?.type,
-            "Referred By": item.submissionRefference?.personName || "N/A",
+            "Reference Source": item.submissionReference?.type,
+            "Referred By": item.submissionReference?.personName || "N/A",
 
             "Registration Date": new Date(item.createdAt).toLocaleString(),
         }));

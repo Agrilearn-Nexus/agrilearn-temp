@@ -184,7 +184,7 @@ export function SubmissionDetailsModal({submission, isOpen, onClose}: ModalProps
                             </div>
 
                             {/* Section 3 - Source (Now guaranteed to be visible) */}
-                            <div>
+                            {submission.submissionReference && <div>
                                 <h4 className="text-xs font-bold text-green-700 uppercase tracking-widest mb-3 flex items-center gap-2">
                                     <Calendar className="w-4 h-4"/> Source
                                 </h4>
@@ -192,11 +192,11 @@ export function SubmissionDetailsModal({submission, isOpen, onClose}: ModalProps
                                     className="bg-blue-50/50 p-3 rounded-lg border border-blue-100 flex items-center justify-between">
                                     <span className="text-sm text-blue-800">Referral Source</span>
                                     <span
-                                        className="font-medium text-blue-900 capitalize">{submission.submissionRefference?.type?.toLowerCase().replace("_", " ")}
-                                        {submission.submissionRefference?.type === "PERSON" && submission.submissionRefference?.personName ? ` (${submission.submissionRefference?.personName})` : ""}
+                                        className="font-medium text-blue-900 capitalize">{submission.submissionReference?.type?.toLowerCase().replace("_", " ")}
+                                        {submission.submissionReference?.type === "PERSON" && submission.submissionReference?.personName ? ` (${submission.submissionReference?.personName})` : ""}
                                     </span>
                                 </div>
-                            </div>
+                            </div>}
 
                         </div>
                     </div>
