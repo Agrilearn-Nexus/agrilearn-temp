@@ -108,7 +108,7 @@ export function SubmissionTable({data}: { data: any[] }) {
                         <th className="px-6 py-4 font-semibold tracking-wider">Student</th>
                         <th className="px-6 py-4 font-semibold tracking-wider">Education</th>
                         <th className="px-6 py-4 font-semibold tracking-wider">Source</th>
-                        <th className="px-6 py-4 font-semibold tracking-wider">Payment</th>
+                        <th className="px-6 py-4 font-semibold tracking-wider">Selected Plan</th>
                         <th className="px-6 py-4 text-right">Action</th>
                     </tr>
                     </thead>
@@ -146,28 +146,26 @@ export function SubmissionTable({data}: { data: any[] }) {
                                row.submissionRefference?.type === 'WEBSITE' ? 'bg-blue-100 text-blue-700' :
                                    'bg-purple-100 text-purple-700'
                        }`}>
-                      {row.submissionRefference?.type === 'WHATSAPP_GROUP' ? 'WhatsApp' :
-                          row.submissionRefference?.type?.replace("_", " ") || 'Unknown'}
+                      {row.submissionReference?.type === 'WHATSAPP_GROUP' ? 'WhatsApp' :
+                          row.submissionReference?.type?.replace("_", " ") || 'Unknown'}
                    </span>
                             </td>
 
-                            {/* Payment Status */}
+                            {/* selected plan */}
                             <td className="px-6 py-4">
-                                {row.payment?.UpiImageUrl ? (
-                                    <div className="flex items-center gap-1.5 text-green-600 font-medium text-xs">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"/>
-                                        Verified
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-1.5 text-orange-500 font-medium text-xs">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-orange-500"/>
-                                        Pending
-                                    </div>
-                                )}
-                                <div className="text-[10px] text-gray-400 mt-0.5">
-                                    {row.payment?.paymentDate ? new Date(row.payment.paymentDate).toLocaleDateString() : ""}
+                                <div className="flex flex-col gap-1 max-w-[260px]">
+                                    <span className="text-sm font-semibold text-gray-800 line-clamp-1">
+                                      {row.submissionDetail?.split("– ₹")[0] || "N/A"}
+                                    </span>
+
+                                    {row.submissionDetail?.includes("₹") && (
+                                        <span className="text-xs font-medium text-green-600">
+                                            ₹{row.submissionDetail.split("₹")[1]}
+                                          </span>
+                                    )}
                                 </div>
                             </td>
+
 
                             {/* Action */}
                             <td className="px-6 py-4 text-right">
