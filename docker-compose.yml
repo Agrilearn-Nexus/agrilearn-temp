@@ -1,23 +1,23 @@
 services:
   app:
     container_name: agrilearn_app
-    #    image: ghcr.io/agrilearn-nexus/agrilearn-temp/app:latest
-    build:
-      context: .
-      args:
-        DATABASE_URL: $DATABASE_URL
-        NEXTAUTH_URL: $NEXTAUTH_URL
-        GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
-        NEXT_PUBLIC_GOOGLE_CLIENT_ID: $NEXT_PUBLIC_GOOGLE_CLIENT_ID
-        target: production
-        R2_ENDPOINT: $R2_ENDPOINT
-        R2_ACCESS_KEY_ID: $R2_ACCESS_KEY_ID
-        R2_SECRET_ACCESS_KEY: $R2_SECRET_ACCESS_KEY
-        R2_BUCKET_NAME: $R2_BUCKET_NAME
-        R2_PUBLIC_BASE_URL: $R2_PUBLIC_BASE_URL
-        INNGEST_EVENT_KEY: $INNGEST_EVENT_KEY
-        INNGEST_SIGNING_KEY: $INNGEST_SIGNING_KEY
-        INNGEST_BASE_URL: $INNGEST_BASE_URL
+    image: ghcr.io/agrilearn-nexus/agrilearn-temp/app:latest
+#    build:
+#      context: .
+#      args:
+#        DATABASE_URL: $DATABASE_URL
+#        NEXTAUTH_URL: $NEXTAUTH_URL
+#        GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
+#        NEXT_PUBLIC_GOOGLE_CLIENT_ID: $NEXT_PUBLIC_GOOGLE_CLIENT_ID
+#        target: production
+#        R2_ENDPOINT: $R2_ENDPOINT
+#        R2_ACCESS_KEY_ID: $R2_ACCESS_KEY_ID
+#        R2_SECRET_ACCESS_KEY: $R2_SECRET_ACCESS_KEY
+#        R2_BUCKET_NAME: $R2_BUCKET_NAME
+#        R2_PUBLIC_BASE_URL: $R2_PUBLIC_BASE_URL
+#        INNGEST_EVENT_KEY: $INNGEST_EVENT_KEY
+#        INNGEST_SIGNING_KEY: $INNGEST_SIGNING_KEY
+#        INNGEST_BASE_URL: $INNGEST_BASE_URL
 
 
     restart: always
