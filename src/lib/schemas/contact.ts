@@ -1,21 +1,12 @@
 import {z} from "zod";
+import {ContactRole} from "@/.generated/enums";
 
-// 1. Define the strictly allowed values
-export const CONTACT_ROLES = [
-    "student",
-    "farmer",
-    "professor",
-    "organization",
-    "other"
-] as const;
-
-// 2. Define the user-friendly labels for the UI
-export const ROLE_LABELS: Record<typeof CONTACT_ROLES[number], string> = {
-    student: "Student",
-    farmer: "Farmer",
-    professor: "Professor / Researcher",
-    organization: "Organization",
-    other: "Other",
+export const ROLE_LABELS: Record<ContactRole, string> = {
+    STUDENT: "Student",
+    FARMER: "Farmer",
+    PROFESSOR: "Professor / Researcher",
+    ORGANIZATION: "Organization",
+    OTHER: "Other",
 };
 
 // 3. The Validation Schema
@@ -33,7 +24,7 @@ export const contactSchema = z.object({
         .min(1, {message: "Phone number is required"})
         .min(10, {message: "Phone number must be at least 10 digits"}),
 
-    role: z.enum(CONTACT_ROLES, {
+    role: z.enum(ContactRole, {
         message: "Please select a valid role from the list",
     }),
 

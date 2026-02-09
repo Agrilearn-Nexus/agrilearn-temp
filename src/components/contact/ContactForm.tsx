@@ -6,11 +6,13 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {
     contactSchema,
     type ContactFormData,
-    CONTACT_ROLES,
     ROLE_LABELS
 } from "@/lib/schemas/contact";
+import {CONTACT_ROLES} from "@/lib/enums/contact-role";
+
 import {Mail, Phone, MapPin, Send, Loader2, ChevronDown} from "lucide-react";
 import toast, {Toaster} from "react-hot-toast";
+import {submitContactForm} from "@/actions/contact";
 
 const ContactForm = () => {
     const [formKey, setFormKey] = useState(0);
@@ -26,7 +28,7 @@ const ContactForm = () => {
             name: "",
             email: "",
             phone: "",
-            role: "" as any,
+            role: undefined as any,
             subject: "",
             message: "",
         },
@@ -34,18 +36,16 @@ const ContactForm = () => {
 
     // 3. Type the handler explicitly as SubmitHandler<ContactFormData>
     const onSubmit: SubmitHandler<ContactFormData> = async (data) => {
-        console.log("Validated Form Data:", data);
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const result = await submitContactForm(data);
+        if (result.success) {
+            toast.success("Message Sent! We'll get back to you within 24 hours.");
+            reset();
+            setFormKey((prev) => prev + 1);
+        } else {
+            toast.error(result.error || "Something went wrong.");
+        }
 
-        // TODO: Connect your backend logic here
-        // await submitContactForm(data);
-
-        toast.success("Message Sent! We'll get back to you within 24 hours.");
-
-        reset();
-        setFormKey((prev) => prev + 1);
     };
 
     return (
