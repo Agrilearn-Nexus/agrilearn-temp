@@ -2,6 +2,7 @@ import {inngest} from "@/inngest/client";
 import {prisma} from "@/lib/prisma";
 import {ReferenceType, SubmissionStatus} from "@/.generated/enums";
 import {fileDelete} from "@/utils/operations";
+import {logAndAlert} from "@/lib/admin-alert";
 
 export const persistSubmission = inngest.createFunction(
     {
@@ -22,6 +23,16 @@ export const persistSubmission = inngest.createFunction(
                     }
                 });
             }
+            await logAndAlert({
+                source: "persist-submission",
+                error,
+                submissionId: dbId,
+                context: {
+                    humanId: dbId,
+                    eventData: event.data
+                }
+            })
+
         }
     },
     {event: "submission.validated"},

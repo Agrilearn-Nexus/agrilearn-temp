@@ -3,6 +3,7 @@ import {validateForm} from "@/lib/validators";
 import {fileDelete} from "@/utils/operations";
 import {prisma} from "@/lib/prisma";
 import {SubmissionStatus} from "@/.generated/client";
+import {logAndAlert} from "@/lib/admin-alert";
 
 export const validateSubmission = inngest.createFunction(
     {
@@ -23,6 +24,16 @@ export const validateSubmission = inngest.createFunction(
                     },
                 });
             }
+
+            await logAndAlert({
+                source: "validate-submission",
+                error,
+                submissionId: dbId,
+                context: {
+                    humanId: dbId,
+                    eventData: event.data
+                }
+            })
         }
     },
     {event: "submission.received"},

@@ -3,6 +3,7 @@ import {sendEmail} from "@/lib/mailer";
 import SubmissionSuccessEmail from "@/emails/SubmissionSuccessEmail";
 import {prisma} from "@/lib/prisma";
 import {SubmissionStatus} from "@/.generated/enums";
+import {logAndAlert} from "@/lib/admin-alert";
 
 export const notifySubmission = inngest.createFunction(
     {
@@ -19,6 +20,16 @@ export const notifySubmission = inngest.createFunction(
                     }
                 });
             }
+
+            await logAndAlert({
+                source: "notify-submission",
+                error,
+                submissionId,
+                context: {
+                    humanId: submissionId,
+                    eventData: event.data
+                }
+            })
         }
     },
     {event: "submission.persisted"},
