@@ -9,13 +9,12 @@ import { Prisma } from "@/.generated/client";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const {
-      paymentReceipt: paymentReceiptKey,
-      referenceSource,
-      referredPerson,
-      referredDesignation,
-      ...submissionData
-    } = body;
+    console.log(`body: `, body);
+    const { paymentReceipt: paymentReceiptKey, ...submissionData } = body;
+
+    const referenceSource = submissionData.referenceSource;
+    const referredPerson = submissionData.referredPerson;
+    const referredDesignation = submissionData.referredPersonDesignation;
 
     if (!paymentReceiptKey) {
       return NextResponse.json(
@@ -45,45 +44,50 @@ export async function POST(req: Request) {
         where: {
           type_personName: {
             type: referenceSource,
-            personName: isPerson ? referredPerson : null,
+            personName: isPerson ? referredPerson : `NA`,
           },
         },
         create: {
           type: referenceSource,
-          personName: isPerson ? referredPerson : null,
-          personDesignation: isPerson ? referredDesignation : null,
+          personName: isPerson ? referredPerson : `NA`,
+          personDesignation: isPerson ? referredDesignation : `NA`,
         },
       };
 
-    const submission = await prisma.$transaction(async (tx) => {
-      const humanId = await generateHumanId(tx);
+    const submission = await prisma.$transaction(
+      async (tx) => {
+        const humanId = await generateHumanId(tx);
 
-      return tx.submissions.create({
-        data: {
-          submissionId: humanId, // The human readable ID
-          // Store minimal data required to identify the user if the flow fails
-          name: submissionData.fullName,
-          email: submissionData.email,
-          phone: submissionData.whatsapp,
-          whatsappNumber: submissionData.whatsapp,
-          status: SubmissionStatus.PROCESSING,
-          education: submissionData.education,
-          currentDesignation: submissionData.designation,
-          institute: submissionData.college,
-          organization: submissionData.university,
-          address: submissionData.postalAddress,
-          city: submissionData.city,
-          district: submissionData.district,
-          postalCode: submissionData.postalCode,
-          state: submissionData.state,
-          submissionDetail: submissionData.feeDetails,
+        return tx.submissions.create({
+          data: {
+            submissionId: humanId,
+            name: submissionData.fullName,
+            email: submissionData.email,
+            phone: submissionData.whatsapp,
+            whatsappNumber: submissionData.whatsapp,
+            status: SubmissionStatus.PROCESSING,
+            education: submissionData.education,
+            currentDesignation: submissionData.designation,
+            institute: submissionData.college,
+            organization: submissionData.university,
+            address: submissionData.postalAddress,
+            city: submissionData.city,
+            district: submissionData.district,
+            postalCode: submissionData.postalCode,
+            state: submissionData.state,
+            submissionDetail: submissionData.feeDetails,
 
-          submissionReference: {
-            connectOrCreate: referenceConnectOrCreate,
+            submissionReference: {
+              connectOrCreate: referenceConnectOrCreate,
+            },
           },
-        },
-      });
-    });
+        });
+      },
+      {
+        maxWait: 5000,
+        timeout: 10000,
+      },
+    );
 
     const receiptUrl = `${publicBaseUrl}/${paymentReceiptKey}`;
 
