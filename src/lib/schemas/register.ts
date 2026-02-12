@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { referenceTypes } from "../enums/register";
-import { ReferenceType } from "@/.generated/enums";
+import { referenceTypes } from "@/lib/enums/register";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_TYPES = [
   "image/jpeg",
@@ -8,6 +7,7 @@ const ACCEPTED_TYPES = [
   "image/png",
   "application/pdf",
 ];
+
 const baseSchema = z
   .object({
     fullName: z.string().min(2, "Full name is required"),
@@ -32,7 +32,10 @@ const baseSchema = z
     paymentDate: z.string().min(1, "Payment date is required"),
     upiId: z.string().optional(),
 
-    referenceSource: z.enum(ReferenceType),
+    referenceSource: z.enum(referenceTypes, {
+      message: "Please select a valid reference source",
+    }),
+
     referredPerson: z.string().optional(),
     referredPersonDesignation: z.string().optional(),
   })
@@ -41,8 +44,8 @@ const baseSchema = z
       if (!data.referredPerson || data.referredPerson.length < 2) {
         ctx.addIssue({
           path: ["referredPerson"],
-          message: "Person Name Required",
-          code: `custom`,
+          message: "Person Name is required when selecting 'Person'",
+          code: z.ZodIssueCode.custom,
         });
       }
     }
@@ -67,7 +70,6 @@ export const registerSchema = baseSchema.extend({
 
 export const submissionSchema = baseSchema.extend({
   paymentReceipt: z.string().optional(),
-
   whatsappGroupJoined: z.literal(true, {
     message: "You must join the WhatsApp group",
   }),

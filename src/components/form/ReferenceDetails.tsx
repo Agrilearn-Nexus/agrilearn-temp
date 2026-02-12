@@ -1,30 +1,28 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
-
-export const referenceTypes = [
-  "SOCAIL_MEDIA",
-  "WHATSAPP_GROUP",
-  "PERSON",
-  "WEBSITE",
-  "MAIL",
-] as const;
+import { useFormContext, useWatch } from "react-hook-form";
+import { referenceTypes } from "@/lib/enums/register";
+import { motion, AnimatePresence } from "motion/react";
 
 const ReferenceDetails = () => {
   const {
     register,
-    watch,
-    formState: { errors },
+    control,
     setValue,
+    formState: { errors },
   } = useFormContext();
 
-  const selectedReference = watch("referenceSource", "");
+  const selectedReference = useWatch({
+    control,
+    name: "referenceSource",
+    defaultValue: "",
+  });
 
   const showPersonFields = selectedReference === "PERSON";
 
   useEffect(() => {
-    if (selectedReference !== "PERSON") {
+    if (selectedReference && selectedReference !== "PERSON") {
       setValue("referredPerson", "");
       setValue("referredPersonDesignation", "");
     }
@@ -76,42 +74,59 @@ const ReferenceDetails = () => {
               </div>
 
               {errors.referenceSource && (
-                <p className="text-red-500 text-xs">
-                  {errors.referenceSource.message as string}
+                <p className="text-red-500 text-xs mt-2">
+                  {errors.referenceSource?.message as string}
                 </p>
               )}
             </div>
 
-            {showPersonFields && (
-              <>
-                {/* Referred Person */}
-                <div>
-                  <label className="text-sm font-bold text-gray-800 mb-2 block">
-                    Name of Referred Person
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Name of the person who referred you"
-                    {...register("referredPerson")}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3F7A5A]/20 focus:border-[#3F7A5A] transition-colors"
-                  />
-                </div>
+            {/* Animation Wrapper */}
+            <AnimatePresence>
+              {showPersonFields && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                  animate={{ opacity: 1, height: "auto", marginTop: 24 }} 
+                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-6">
+                    {/* Referred Person */}
+                    <div>
+                      <label className="text-sm font-bold text-gray-800 mb-2 block">
+                        Name of Referred Person <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Name of the person who referred you"
+                        {...register("referredPerson", {
+                            required: showPersonFields ? "Person name is required" : false
+                        })}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3F7A5A]/20 focus:border-[#3F7A5A] transition-colors"
+                      />
+                       {errors.referredPerson && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.referredPerson?.message as string}
+                        </p>
+                      )}
+                    </div>
 
-                {/* Designation */}
-                <div>
-                  <label className="text-sm font-bold text-gray-800 mb-2 block">
-                    Referred Person Designation
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Professor, Student, Manager"
-                    // FIXED: Updated to referredPersonDesignation
-                    {...register("referredPersonDesignation")}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3F7A5A]/20 focus:border-[#3F7A5A] transition-colors"
-                  />
-                </div>
-              </>
-            )}
+                    {/* Designation */}
+                    <div>
+                      <label className="text-sm font-bold text-gray-800 mb-2 block">
+                        Referred Person Designation
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Professor, Student, Manager"
+                        {...register("referredPersonDesignation")}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3F7A5A]/20 focus:border-[#3F7A5A] transition-colors"
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>

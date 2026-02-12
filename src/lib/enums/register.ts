@@ -6,7 +6,7 @@ export const ACCEPTED_TYPES = [
   "application/pdf",
 ];
 export const referenceTypes = [
-  "SOCAIL_MEDIA",
+  "SOCAIL_MEDIA", 
   "WHATSAPP_GROUP",
   "PERSON",
   "WEBSITE",

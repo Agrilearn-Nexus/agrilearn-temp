@@ -64,7 +64,6 @@ const RegisterPage = () => {
             // 2. Submit Form Data
             toast.loading("Finalizing registration...", {id: toastId});
 
-            // Prepare payload (JSON)
             const payload = {
                 ...data,
                 paymentReceipt: receiptUrl,
