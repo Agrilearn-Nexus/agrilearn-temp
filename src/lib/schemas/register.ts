@@ -32,8 +32,8 @@ const baseSchema = z
     paymentDate: z.string().min(1, "Payment date is required"),
     upiId: z.string().optional(),
 
-    referenceSource: z.enum(referenceTypes, {
-      message: "Please select a valid reference source",
+    referenceSource: z.enum([...referenceTypes] as [string, ...string[]], {
+      error: `Please select a valid reference source`,
     }),
 
     referredPerson: z.string().optional(),
