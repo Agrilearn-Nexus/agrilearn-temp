@@ -1,5 +1,6 @@
 import { z } from "zod";
-
+import { referenceTypes } from "../enums/register";
+import { ReferenceType } from "@/.generated/enums";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_TYPES = [
   "image/jpeg",
@@ -7,14 +8,6 @@ const ACCEPTED_TYPES = [
   "image/png",
   "application/pdf",
 ];
-export const referenceTypes = [
-  "SOCAIL_MEDIA",
-  "WHATSAPP_GROUP",
-  "PERSON",
-  "WEBSITE",
-  "MAIL",
-] as const;
-
 const baseSchema = z
   .object({
     fullName: z.string().min(2, "Full name is required"),
@@ -39,9 +32,9 @@ const baseSchema = z
     paymentDate: z.string().min(1, "Payment date is required"),
     upiId: z.string().optional(),
 
-    referenceSource: z.enum(referenceTypes),
+    referenceSource: z.enum(ReferenceType),
     referredPerson: z.string().optional(),
-    referredDesignation: z.string().optional(),
+    referredPersonDesignation: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.referenceSource === "PERSON") {
