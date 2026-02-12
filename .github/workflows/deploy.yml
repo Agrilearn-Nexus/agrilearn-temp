@@ -91,6 +91,7 @@ jobs:
             SMTP_PORT=${{ secrets.SMTP_PORT }}
             SMTP_USER=${{ secrets.SMTP_USER }}
             SMTP_PASS=${{ secrets.SMTP_PASS }}
+            ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
 
             POSTGRES_USER=${{ secrets.POSTGRES_USER }}
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
@@ -101,8 +102,8 @@ jobs:
             INNGEST_EVENT_KEY=${{ secrets.INNGEST_EVENT_KEY }}
             INNGEST_SIGNING_KEY=${{ secrets.INNGEST_SIGNING_KEY }}
             INNGEST_BASE_URL=${{ secrets.INNGEST_BASE_URL }}
-            INNGEST_SERVE_HOST=https://agrilearnnexus.com
-            INNGEST_SERVE_PATH=/api/inngest
+            INNGEST_SERVE_HOST=${{ secrets.INNGEST_SERVE_HOST }}
+            INNGEST_SERVE_PATH=${{ secrets.INNGEST_SERVE_PATH }}
             EOF
 
             docker compose pull
