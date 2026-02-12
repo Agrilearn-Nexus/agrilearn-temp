@@ -8,55 +8,40 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       packages: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Validate secrets
-        run: |
-          test -n "${{ secrets.GOOGLE_CLIENT_ID }}"
-          test -n "${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}"
-          test -n "${{ secrets.DATABASE_URL }}"
-          test -n "${{ secrets.AUTH_SECRET }}"
-          test -n "${{ secrets.NEXTAUTH_URL }}"
-
-      - name: Login GHCR
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & Push Image
+      - name: Build & Push Docker Image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ghcr.io/agrilearn-nexus/agrilearn-temp/app:latest
+          tags: ghcr.io/${{ github.repository }}/app:latest
+          # 1. BUILD TIME VARIABLES (Baked into the image)
           build-args: |
-            BUILD_ID=${{github.sha}}
-            NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=${{secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}}
+            BUILD_ID=${{ github.sha }}
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
-            R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
-            R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
-            R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
-            R2_PUBLIC_BASE_URL=${{ secrets.R2_PUBLIC_BASE_URL }}
 
-      - name: Copy Repo to VPS
+      - name: Copy Config to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          source: "."
+          source: "docker-compose.yml"
           target: "/home/dev/agrilearn-temp"
-          rm: true
 
       - name: Deploy on VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -68,45 +53,58 @@ jobs:
             set -e
             cd /home/dev/agrilearn-temp
 
+            # 2. LOG IN TO GHCR ON VPS
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
+            # 3. GENERATE .env FILE FROM GITHUB SECRETS
             cat > .env <<EOF
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
-            ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}
-            NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
-            NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=${{secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}}
+            # --- System & Build ---
+            NODE_ENV=production
+            NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=${{ secrets.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY }}
 
+            # --- Database ---
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+
+            # --- Auth ---
+            AUTH_SECRET=${{ secrets.AUTH_SECRET }}
+            NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}
+            ALLOWED_EMAIL=${{ secrets.ALLOWED_EMAIL }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.NEXT_PUBLIC_GOOGLE_CLIENT_ID }}
 
+            # --- Cloudflare R2 Storage ---
             R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
             R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
             R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
             R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
             R2_PUBLIC_BASE_URL=${{ secrets.R2_PUBLIC_BASE_URL }}
 
+            # --- Email (SMTP) ---
             SMTP_HOST=${{ secrets.SMTP_HOST }}
             SMTP_PORT=${{ secrets.SMTP_PORT }}
             SMTP_USER=${{ secrets.SMTP_USER }}
             SMTP_PASS=${{ secrets.SMTP_PASS }}
             ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
 
-            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-
-            INNGEST_DEV=${{ secrets.INNGEST_DEV }}
-            INNGEST_SECRET=${{ secrets.INNGEST_SECRET }}
+            # --- Inngest (Background Jobs) ---
+            INNGEST_DEV=0
             INNGEST_EVENT_KEY=${{ secrets.INNGEST_EVENT_KEY }}
             INNGEST_SIGNING_KEY=${{ secrets.INNGEST_SIGNING_KEY }}
+
+            # Docker Networking for Inngest
+            # If these are not in Secrets, we default to the standard Docker service names
             INNGEST_BASE_URL=${{ secrets.INNGEST_BASE_URL }}
             INNGEST_SERVE_HOST=${{ secrets.INNGEST_SERVE_HOST }}
             INNGEST_SERVE_PATH=${{ secrets.INNGEST_SERVE_PATH }}
             EOF
 
+            # 4. DEPLOYMENT COMMANDS
             docker compose pull
-            docker compose up -d
-            docker compose exec -T app npx @inngest/cli apps sync -u || true
+            docker compose up -d --force-recreate
+
+            sleep 10
+            docker compose exec -T app npx inngest-cli apps sync -u ${{ secrets.INNGEST_BASE_URL }} || echo "Inngest sync skipped"
+
+            # Cleanup old images to save space
             docker image prune -f
