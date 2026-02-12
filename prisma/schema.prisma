@@ -184,3 +184,15 @@ model ContactSubmission {
   @@index([email])
   @@index([createdAt])
 }
+
+model CleanupLog {
+  id            String @id @default(uuid())
+  startedAt     DateTime @default(now())
+  status        String // 'SUCCESS' | 'FAILED
+  totalR2Files  Int      @default(0)
+  linkedDbFiles Int      @default(0)
+  orphansFound  Int      @default(0)
+  deletedCount  Int      @default(0)
+  durationMs    Int      @default(0)
+  logs          Json?
+}
