@@ -11,7 +11,7 @@ import {
 
 export const orphanFileCleanUp = inngest.createFunction(
   { id: `orphan-file-cleanup` },
-  { cron: "30 21 * * *" },
+  { cron: "TZ=Asia/Kolkata 0 3 * * *" },
 
   async ({ step }) => {
     const startTime = Date.now();
