@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import data from "@/data/registrationDetails.json"; // Importing the JSON data
 
 import { GrOrganization, GrCalendar } from "react-icons/gr";
 import { FiClock } from "react-icons/fi";
@@ -14,6 +15,7 @@ const FormHeader = () => {
   return (
     <div className="w-full flex justify-center p-4 md:p-8">
       <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        
         {/* Header Banner */}
         <div className="bg-[#3F7A5A] text-white flex flex-col items-center py-10 px-4 text-center">
           <div className="flex items-center gap-4 mb-6">
@@ -23,8 +25,8 @@ const FormHeader = () => {
 
             <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
               <Image
-                src={`/logo.jpeg`}
-                alt="Company Logo"
+                src={data.theme.logo.src}
+                alt={data.theme.logo.alt}
                 className="rounded-full object-cover"
                 width={48}
                 height={48}
@@ -37,21 +39,22 @@ const FormHeader = () => {
           </div>
 
           <h1 className="font-serif font-bold text-3xl md:text-5xl tracking-wide mb-2">
-            Faculty Development Program
+            {data.header.title}
           </h1>
 
           <h2 className="font-sans text-sm md:text-lg font-medium tracking-widest uppercase opacity-90">
-            Registration Form – {new Date().getFullYear()}
+            {data.header.subtitle} – {new Date().getFullYear()}
           </h2>
         </div>
 
         {/* Body */}
         <div className="p-6 md:p-10">
           <div className="flex flex-col md:flex-row gap-10">
-            {/* Left Section */}
+            
+            {/* Left Section - FDP Details */}
             <div className="flex-1">
               <h3 className="font-serif text-xl font-bold text-gray-800 border-b pb-2 mb-4">
-                FDP Details
+                {data.fdpDetails.sectionTitle}
               </h3>
 
               <div className="space-y-5">
@@ -61,12 +64,10 @@ const FormHeader = () => {
                   </div>
                   <div>
                     <p className="font-bold text-gray-800 leading-tight">
-                      International Conference on Sustainable Agriculture & Food
-                      Security
+                      {data.fdpDetails.event.name}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
-                      Innovations in Agricultural Research for a Changing
-                      Climate
+                      {data.fdpDetails.event.description}
                     </p>
                   </div>
                 </div>
@@ -76,26 +77,31 @@ const FormHeader = () => {
                     <FaLaptop size={22} />
                   </div>
                   <div>
-                    <p className="font-bold text-gray-800">VIRTUAL</p>
-                    <p className="text-sm text-gray-500">Bihar, India</p>
+                    <p className="font-bold text-gray-800">{data.fdpDetails.location.mode}</p>
+                    <p className="text-sm text-gray-500">{data.fdpDetails.location.place}</p>
                   </div>
                 </div>
 
-                <div className="flex gap-3 items-center">
-                  <div className="text-[#3F7A5A]">
+                <div className="flex gap-3 items-start">
+                  <div className="mt-1 text-[#3F7A5A]">
                     <GrCalendar size={20} />
                   </div>
-                  <p className="font-bold text-gray-800">
-                    February 21-28, 2026
-                  </p>
+                  <div>
+                    <p className="font-bold text-gray-800">
+                      {data.fdpDetails.date}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {data.fdpDetails.time}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Section */}
+            {/* Right Section - Important Information */}
             <div className="flex-1">
               <h3 className="font-serif text-xl font-bold text-gray-800 border-b pb-2 mb-4">
-                Important Information
+                {data.importantInformation.sectionTitle}
               </h3>
 
               <div className="space-y-5">
@@ -107,7 +113,7 @@ const FormHeader = () => {
                     <p className="text-xs uppercase text-gray-400 font-semibold tracking-wider">
                       Registration Deadline:
                     </p>
-                    <p className="font-bold text-gray-800">February 20, 2026</p>
+                    <p className="font-bold text-gray-800">{data.importantInformation.registrationDeadline}</p>
                   </div>
                 </div>
 
@@ -120,12 +126,11 @@ const FormHeader = () => {
                     <p className="text-xs uppercase text-gray-400 font-semibold tracking-wider">
                       Contact Number:
                     </p>
-
                     <a
-                      href="tel:+917488468326"
+                      href={`tel:${data.importantInformation.contact.phone.value}`}
                       className="font-bold text-gray-800 hover:text-[#3F7A5A] transition-colors"
                     >
-                      +91 7488468326
+                      {data.importantInformation.contact.phone.display}
                     </a>
                   </div>
                 </div>
@@ -139,35 +144,28 @@ const FormHeader = () => {
                     <p className="text-xs uppercase text-gray-400 font-semibold tracking-wider">
                       Email:
                     </p>
-
-                    <a
-                      href="mailto:support@agrilearnnexus.com"
-                      className="font-bold text-gray-800 text-sm hover:text-[#3F7A5A] transition-colors block"
-                    >
-                      support@agrilearnnexus.com
-                    </a>
-
-                    <a
-                      href="mailto:office@agrilearnnexus.com"
-                      className="font-bold text-gray-800 text-sm hover:text-[#3F7A5A] transition-colors block"
-                    >
-                      office@agrilearnnexus.com
-                    </a>
+                    {data.importantInformation.contact.emails.map((email) => (
+                      <a
+                        key={email}
+                        href={`mailto:${email}`}
+                        className="font-bold text-gray-800 text-sm hover:text-[#3F7A5A] transition-colors block mt-1"
+                      >
+                        {email}
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Note */}
+          {/* Note Section */}
           <div className="mt-8 bg-[#3F7A5A]/10 border-l-[6px] border-[#3F7A5A] p-4 rounded-r-lg">
             <p className="text-sm text-[#2a523c] leading-relaxed">
-              <span className="font-bold">NOTE:</span> All certificates and
-              relevant information will be provided via email. Hard copy
-              certificates will be dispatched to the postal address mentioned in
-              the registration form.
+              <span className="font-bold">{data.note.label}</span> {data.note.text}
             </p>
           </div>
+          
         </div>
       </div>
     </div>

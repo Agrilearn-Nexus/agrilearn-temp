@@ -10,7 +10,7 @@ const FormHero = () => {
       </div>
 
       <h1 className="animate-fade-in-up delay-100 text-4xl md:text-5xl lg:text-7xl text-center font-serif leading-tight tracking-tight drop-shadow-lg">
-        Faculty Development Program, <br className="hidden md:block" />
+        SPSS Agriculture Extension Program, <br className="hidden md:block" />
         <span className="text-[#E8BA30]">2026</span>
       </h1>
 

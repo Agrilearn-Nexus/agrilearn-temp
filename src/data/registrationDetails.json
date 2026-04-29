@@ -1,0 +1,44 @@
+{
+  "theme": {
+    "primaryColor": "#3F7A5A",
+    "logo": {
+      "src": "/logo.jpeg",
+      "alt": "Agrilearn Nexus"
+    }
+  },
+  "header": {
+    "title": "SPSS Agriculture Extension Program",
+    "subtitle": "Registration Form"
+  },
+  "fdpDetails": {
+    "sectionTitle": "Agriculture Extension Program",
+    "event": {
+      "name": "SPSS Agriculture Extension Program",
+      "description": "SPSS Agriculture Extension Program"
+    },
+    "location": {
+      "mode": "VIRTUAL",
+      "place": "Bihar, India"
+    },
+    "date": "May 19-21, 2026",
+    "time": "3:30 PM - 06:30 PM IST"
+  },
+  "importantInformation": {
+    "sectionTitle": "Important Information",
+    "registrationDeadline": "May 18, 2026",
+    "contact": {
+      "phone": {
+        "display": "+91 7488468326",
+        "value": "+917488468326"
+      },
+      "emails": [
+        "support@agrilearnnexus.com",
+        "office@agrilearnnexus.com"
+      ]
+    }
+  },
+  "note": {
+    "label": "NOTE:",
+    "text": "All certificates and relevant information will be provided via email. Hard copy certificates will be dispatched to the postal address mentioned in the registration form."
+  }
+}
