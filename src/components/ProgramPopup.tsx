@@ -52,11 +52,10 @@ const ProgramPopup = () => {
         </button>
 
         {/* Left Side: Image Container */}
-
         <div className="w-full md:w-1/2 relative h-72 md:h-auto shrink-0 bg-gray-50 flex items-center justify-center">
           <Image
             src="/popup_banner.jpg"
-            alt="Faculty Development Program"
+            alt="SPSS Training Program"
             fill
             className="object-contain p-1"
             priority
@@ -74,23 +73,21 @@ const ProgramPopup = () => {
         <div className="w-full md:w-1/2 p-5 md:p-10 flex flex-col justify-center bg-white relative">
           <div className="hidden md:block mb-4">
             <span className="bg-[#E8BA30]/20 text-[#b58d18] text-xs font-bold px-3 py-1 rounded-full border border-[#E8BA30]/30 tracking-wider">
-              UPCOMING EVENT
+              3-DAY HANDS-ON TRAINING
             </span>
           </div>
 
           <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#0a2f1c] mb-3 leading-tight">
-            Faculty Development Program
+            SPSS in Agricultural Extension
           </h2>
 
           <div className="flex items-center gap-2 text-gray-500 text-sm mb-4 font-medium">
             <Calendar size={16} className="text-[#E8BA30]" />
-            <span>February 21-28, 2026</span>
+            <span>May 19-21 | 3:30 PM - 6:30 PM</span>
           </div>
 
           <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-base leading-relaxed">
-            Join top agricultural scientists and innovators for an immersive
-            8-day Faculty Development Program on sustainable farming
-            technologies.
+            Learn SPSS from basics to advanced levels and apply powerful statistical tools to real agricultural data for research, extension, and decision making.
           </p>
 
           <div className="flex flex-col gap-3 pb-2">

@@ -48,7 +48,7 @@ const MarqueeNotification = () => {
 
       <div
         ref={marqueeRef}
-        className="fixed top-0 left-0 w-full bg-[#E8BA30] text-[#0a2f1c] overflow-hidden py-3 z-110 shadow-md border-b border-[#0a2f1c]/10"
+        className="fixed top-0 left-0 w-full bg-[#E8BA30] text-[#0a2f1c] overflow-hidden py-3 z-[110] shadow-md border-b border-[#0a2f1c]/10"
       >
         <div className="flex w-full whitespace-nowrap overflow-hidden select-none marquee-container">
           {/* Track 1 */}
@@ -57,10 +57,10 @@ const MarqueeNotification = () => {
               <span key={`t1-${i}`} className="flex items-center gap-4 mx-8 text-sm md:text-base tracking-wide">
                 <span className="font-extrabold uppercase">📢 Upcoming Event:</span>
                 <span className="font-medium">
-                  Faculty Development Program on Sustainable Farming Technologies
+                  3-Day Hands-on Training: SPSS in Agricultural Extension
                 </span>
                 <span className="font-bold bg-[#0a2f1c] text-white px-2 py-0.5 rounded text-xs md:text-sm">
-                  Feb 21-28, 2026
+                  May 19-21 | 3:30 PM - 6:30 PM
                 </span>
                 <Link href="/register" className="underline font-bold text-[#0a2f1c] hover:text-black transition-colors">
                   REGISTER NOW
@@ -75,10 +75,10 @@ const MarqueeNotification = () => {
               <span key={`t2-${i}`} className="flex items-center gap-4 mx-8 text-sm md:text-base tracking-wide">
                 <span className="font-extrabold uppercase">📢 Upcoming Event:</span>
                 <span className="font-medium">
-                  Faculty Development Program on Sustainable Farming Technologies
+                  3-Day Hands-on Training: SPSS in Agricultural Extension
                 </span>
                 <span className="font-bold bg-[#0a2f1c] text-white px-2 py-0.5 rounded text-xs md:text-sm">
-                  Feb 21-28, 2026
+                  May 19-21 | 3:30 PM - 6:30 PM
                 </span>
                 <Link href="/register" className="underline font-bold text-[#0a2f1c] hover:text-black transition-colors">
                   REGISTER NOW

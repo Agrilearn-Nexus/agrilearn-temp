@@ -7,18 +7,18 @@
     }
   },
   "header": {
-    "title": "SPSS Agriculture Extension Program",
+    "title": "SPSS in Agricultural Extension",
     "subtitle": "Registration Form"
   },
   "fdpDetails": {
-    "sectionTitle": "Agriculture Extension Program",
+    "sectionTitle": "Training Details",
     "event": {
-      "name": "SPSS Agriculture Extension Program",
-      "description": "SPSS Agriculture Extension Program"
+      "name": "3-Day Hands-on Training Program",
+      "description": "Learn SPSS from basics to advanced level and apply powerful statistical tools to real agricultural data for research, extension, and decision making."
     },
     "location": {
       "mode": "VIRTUAL",
-      "place": "Bihar, India"
+      "place": "Online"
     },
     "date": "May 19-21, 2026",
     "time": "3:30 PM - 06:30 PM IST"
