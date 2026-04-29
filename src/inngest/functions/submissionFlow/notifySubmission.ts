@@ -35,7 +35,7 @@ export const notifySubmission = inngest.createFunction(
   { event: "submission.persisted" },
 
   async ({ event, step }) => {
-    const { email, submissionId, name, humanId, submissionData } = event.data;
+    const { email, submissionId, name, humanId, certificateType } = event.data;
 
     // 1. Send the Email
     await step.run("send-welcome-email", async () => {
@@ -45,7 +45,7 @@ export const notifySubmission = inngest.createFunction(
         template: SubmissionSuccessEmail({
           fullName: name || "User",
           submissionId: humanId || submissionId,
-          certificateType: submissionData.feeDetails || "General Participation",
+          certificateType: certificateType || "General Participation",
         }),
       });
     });
