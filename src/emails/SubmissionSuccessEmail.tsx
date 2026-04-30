@@ -19,7 +19,7 @@ interface SubmissionSuccessEmailProps {
   fullName: string;
   submissionId: string;
   certificateType: string;
-  programName: string;
+  programName?: string;
 }
 
 export const SubmissionSuccessEmail = ({
