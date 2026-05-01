@@ -8,7 +8,7 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
   if (!session || session.user.role !== "ADMIN") {
-    redirect("/admin/login?error=AccessDenied");
+    redirect("/admin/auth/login?error=AccessDenied");
   }
   return children;
 }
