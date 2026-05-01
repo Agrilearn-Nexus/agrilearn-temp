@@ -1,49 +1,42 @@
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
-import {PrismaAdapter} from "@auth/prisma-adapter"
-import {prisma} from "@/lib/prisma"
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/lib/prisma";
 
-const ALLOWED_EMAIL = process.env.ALLOWED_EMAIL!;
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(prisma),
 
-export const {handlers, auth, signIn, signOut} = NextAuth({
-    adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "database",
+  },
 
-    session: {
-        strategy: "database",
+  providers: [
+    Google({
+      clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+
+  callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider !== "google") return false;
+      if (!user?.email) return false;
+
+      return true;
     },
 
-    providers: [
-        Google({
-            clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            allowDangerousEmailAccountLinking: false,
-        }),
-    ],
-
-    callbacks: {
-        async signIn({user, account}) {
-            if (account?.provider !== "google") return false
-
-            if (!user?.email) return false
-            if (user.email.toLowerCase() !== ALLOWED_EMAIL.toLowerCase()) return false
-
-            return true
-        },
-
-        async session({session, user}) {
-            if (session?.user) {
-                session.user.id = user.id
-            }
-            return session
-        },
+    async session({ session, user }) {
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.role = user.role;
+      }
+      return session;
     },
+  },
 
-    pages: {
-        signIn: "/admin/auth/login",
-        error: "/admin/auth/login",
-    },
+  pages: {
+    signIn: "/admin/auth/login",
+  },
 
-    debug: process.env.NODE_ENV !== "production",
-
-    trustHost: true,
-})
+  trustHost: true,
+});
