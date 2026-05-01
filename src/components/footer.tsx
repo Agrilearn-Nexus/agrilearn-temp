@@ -1,8 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FaFacebookSquare, FaInstagram } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { SiLinkedin } from "react-icons/si";
+import { FaLinkedin } from "react-icons/fa6";
 import { IoCallOutline, IoLocationOutline } from "react-icons/io5";
 import { CiMail } from "react-icons/ci";
 import { ImYoutube } from "react-icons/im";
@@ -71,7 +70,7 @@ const Footer = () => {
                 label: "Instagram",
               },
               {
-                icon: <SiLinkedin size={22} />,
+                icon: <FaLinkedin size={22} />,
                 url: "https://www.linkedin.com/in/agrilearn-nexus-9ab0513ab/",
                 label: "LinkedIn",
               },

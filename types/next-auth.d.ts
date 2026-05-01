@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface User {
@@ -15,6 +15,6 @@ declare module "next-auth" {
 
 declare module "next-auth/adapters" {
   interface AdapterUser {
-    role: "USER" | "ADMIN";
+    role?: "USER" | "ADMIN"; // ✅ FIXED
   }
 }
