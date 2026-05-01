@@ -90,10 +90,3 @@ export class Password {
     return min + (byte % range);
   }
 }
-
-console.log(
-  Password.generatePassword({
-    length: 10,
-    excludeAmbiguous: true,
-  }),
-);

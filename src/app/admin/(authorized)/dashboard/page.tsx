@@ -6,7 +6,7 @@ import { School, TrendingUp, UserPlus, Users } from "lucide-react";
 import CleanupLogTable from "@/components/admin/CleanupLogTable";
 export default async function AdminDashboard() {
   const session = await auth();
-  if (!session?.user) redirect("/admin/auth/login");
+  if (!session?.user) redirect("/auth/login");
 
   const submissions = await prisma.submissions.findMany({
     orderBy: { createdAt: "desc" },
@@ -88,14 +88,25 @@ export default async function AdminDashboard() {
         </div>
         <div className="grid grid-cols-1 gap-8">
           <CleanupLogTable />
-
         </div>
       </div>
     </div>
   );
 }
 
-function StatCard({ label, value, icon, trend, color }: any) {
+function StatCard({
+  label,
+  value,
+  icon,
+  trend,
+  color,
+}: {
+  label: string;
+  value: string | number;
+  icon: React.ReactNode;
+  trend: string;
+  color: string;
+}) {
   return (
     <div
       className={`bg-white p-6 rounded-lg shadow-sm ${color} flex flex-col justify-between h-32 relative overflow-hidden group hover:shadow-md transition-shadow`}
