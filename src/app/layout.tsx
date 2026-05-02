@@ -10,7 +10,7 @@ import PageLayout from "@/components/PageLayout";
 import React from "react";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +26,11 @@ export default async function RootLayout({
 }) {
   const session = await auth();
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html
+      suppressHydrationWarning
+      lang="en"
+      className={cn("font-sans", geist.variable)}
+    >
       <body
         className={`${inter.className} w-full min-h-screen flex flex-col font-sans relative`}
       >
