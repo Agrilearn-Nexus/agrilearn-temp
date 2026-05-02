@@ -5,14 +5,32 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { handleSignOut } from "@/actions/auth";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  FileWarning,
+  LayoutDashboard,
+  LogOut,
+  Trash2,
+  Users,
+} from "lucide-react";
+import { Session } from "next-auth";
+import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "./ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
+import { User } from "next-auth";
 
 interface NavbarProps {
-  user?: {
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
-  };
+  user?: User | null;
+  session: Session | null;
 }
 
 // --- CONFIGURATION: Define your links here ---
@@ -53,12 +71,12 @@ const navLinks = [
 const Navbar = ({ user }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  
+
   // Mobile accordion state (tracks which menu is open)
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
 
   const pathname = usePathname();
-  
+
   // Transparency Check Logic
   const isTransparentNav =
     pathname === "/" ||
@@ -104,10 +122,9 @@ const Navbar = ({ user }: NavbarProps) => {
   return (
     <nav
       style={{ top: "var(--marquee-height, 0px)" }}
-      className={`fixed left-0 w-full z-[100] transition-all duration-300 ${navbarBgClass}`}
+      className={`fixed left-0 w-full z-100 transition-all duration-300 ${navbarBgClass}`}
     >
       <div className="container mx-auto flex justify-between items-center px-4 md:px-8 text-white relative z-50">
-        
         {/* LOGO */}
         <Link href="/" className="flex gap-3 items-center group">
           <div className="relative w-10 h-10 overflow-hidden rounded-full border-2 border-white/20 group-hover:border-[#E8BA30] transition-colors">
@@ -123,7 +140,6 @@ const Navbar = ({ user }: NavbarProps) => {
           </h2>
         </Link>
 
-        {/* DESKTOP MENU - CHANGED md:flex TO lg:flex TO HIDE ON TABLET */}
         <div className="hidden lg:flex items-center gap-8">
           <div className="flex gap-1">
             {navLinks.map((item) => (
@@ -134,7 +150,10 @@ const Navbar = ({ user }: NavbarProps) => {
                 >
                   {item.name}
                   {item.dropdown && (
-                    <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-300" />
+                    <ChevronDown
+                      size={14}
+                      className="group-hover:rotate-180 transition-transform duration-300"
+                    />
                   )}
                 </Link>
 
@@ -162,23 +181,12 @@ const Navbar = ({ user }: NavbarProps) => {
           <div className="flex items-center gap-4">
             {user ? (
               <>
-                <Link
-                  href="/admin/dashboard"
-                  className="text-[15px] font-medium px-5 py-2 border border-white/30 rounded-full hover:bg-white hover:text-[#0a2f1c] transition-all"
-                >
-                  Dashboard
-                </Link>
-                <button
-                  onClick={() => handleSignOut()}
-                  className="cursor-pointer text-[15px] font-medium px-5 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all shadow-lg hover:scale-105"
-                >
-                  Logout
-                </button>
+                <UserDropdown handleSignOutAction={handleSignOut} user={user} />
               </>
             ) : (
               <Link
                 href="/register"
-                className="text-[15px] font-medium px-6 py-2 bg-[#E8BA30] text-[#0a2f1c] rounded-full hover:bg-white hover:text-[#0a2f1c] transition-all font-bold shadow-lg hover:shadow-[#E8BA30]/20"
+                className="text-[15px] px-6 py-2 bg-[#E8BA30] text-[#0a2f1c] rounded-full hover:bg-white hover:text-[#0a2f1c] transition-all font-bold shadow-lg hover:shadow-[#E8BA30]/20"
               >
                 Register
               </Link>
@@ -186,16 +194,21 @@ const Navbar = ({ user }: NavbarProps) => {
           </div>
         </div>
 
-        {/* MOBILE TOGGLE - CHANGED md:hidden TO lg:hidden TO SHOW ON TABLET */}
         <div className="lg:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="text-white focus:outline-none p-2"
           >
             <div className="flex flex-col gap-1.5">
-              <span className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""}`}></span>
-              <span className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? "opacity-0" : ""}`}></span>
-              <span className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`}></span>
+              <span
+                className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""}`}
+              ></span>
+              <span
+                className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? "opacity-0" : ""}`}
+              ></span>
+              <span
+                className={`block w-8 h-0.5 bg-white transition-all duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""}`}
+              ></span>
             </div>
           </button>
         </div>
@@ -203,24 +216,33 @@ const Navbar = ({ user }: NavbarProps) => {
 
       {/* MOBILE MENU OVERLAY */}
       <div
-        className={`fixed inset-0 h-[100dvh] bg-[#0a2f1c] z-40 flex flex-col pt-24 pb-10 px-6 transition-all duration-300 overflow-y-auto ${
-          isOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        className={`fixed inset-0 h-dvh bg-[#0a2f1c] z-40 flex flex-col pt-24 pb-10 px-6 transition-all duration-300 overflow-y-auto ${
+          isOpen
+            ? "opacity-100 visible"
+            : "opacity-0 invisible pointer-events-none"
         }`}
       >
         <div className="flex flex-col gap-2 w-full max-w-sm mx-auto">
           {navLinks.map((item) => (
-            <div key={item.name} className="border-b border-white/10 last:border-0">
+            <div
+              key={item.name}
+              className="border-b border-white/10 last:border-0"
+            >
               <div className="flex items-center justify-between">
                 <Link
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="py-4 text-xl font-serif text-white hover:text-[#E8BA30] transition-colors flex-grow"
+                  className="py-4 text-xl font-serif text-white hover:text-[#E8BA30] transition-colors grow"
                 >
                   {item.name}
                 </Link>
                 {item.dropdown && (
                   <button
-                    onClick={() => setMobileExpanded(mobileExpanded === item.name ? null : item.name)}
+                    onClick={() =>
+                      setMobileExpanded(
+                        mobileExpanded === item.name ? null : item.name,
+                      )
+                    }
                     className="p-4 text-white hover:text-[#E8BA30]"
                   >
                     <ChevronDown
@@ -235,7 +257,9 @@ const Navbar = ({ user }: NavbarProps) => {
               {item.dropdown && (
                 <div
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    mobileExpanded === item.name ? "max-h-96 opacity-100 mb-4" : "max-h-0 opacity-0"
+                    mobileExpanded === item.name
+                      ? "max-h-96 opacity-100 mb-4"
+                      : "max-h-0 opacity-0"
                   }`}
                 >
                   <div className="flex flex-col gap-1 pl-4 border-l-2 border-[#E8BA30]/30 ml-2">
@@ -282,7 +306,7 @@ const Navbar = ({ user }: NavbarProps) => {
             <Link
               href="/register"
               onClick={() => setIsOpen(false)}
-              className="text-center text-lg font-medium px-5 py-3 bg-[#E8BA30] text-[#0a2f1c] rounded-xl hover:bg-white transition-all font-bold"
+              className="text-center text-lg px-5 py-3 bg-[#E8BA30] text-[#0a2f1c] rounded-xl hover:bg-white transition-all font-bold"
             >
               Register Now
             </Link>
@@ -292,5 +316,94 @@ const Navbar = ({ user }: NavbarProps) => {
     </nav>
   );
 };
+
+export function UserDropdown({
+  user,
+  handleSignOutAction,
+}: {
+  user: User;
+  handleSignOutAction: () => Promise<void> | void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="relative h-10 w-10 rounded-full hover:bg-muted"
+        >
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={user.image || ""} />
+            <AvatarFallback className="text-sm font-semibold">
+              {user.name?.[0] || "U"}
+            </AvatarFallback>
+          </Avatar>
+
+          {/* Online indicator */}
+          <AvatarBadge className="h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-background" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="end"
+        className="w-64 rounded-xl shadow-xl border bg-popover py-4"
+      >
+        {/* User Info */}
+        <DropdownMenuLabel className="flex flex-col gap-1">
+          <span className="text-sm font-semibold">{user.name}</span>
+          <span className="text-xs text-muted-foreground truncate">
+            {user.email}
+          </span>
+        </DropdownMenuLabel>
+
+        <DropdownMenuSeparator />
+
+        {/* Main actions */}
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link href="/admin/dashboard" className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              Dashboard
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link href="/admin/users" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Users
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link
+              href="/admin/logs/cleanup"
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Cleanup Logs
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link href="/admin/logs/errors" className="flex items-center gap-2">
+              <FileWarning className="h-4 w-4" />
+              Error Logs
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        {/* Logout */}
+        <DropdownMenuItem
+          onClick={handleSignOutAction}
+          className="gap-2 cursor-pointer text-red-600 focus:text-red-600"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export default Navbar;
