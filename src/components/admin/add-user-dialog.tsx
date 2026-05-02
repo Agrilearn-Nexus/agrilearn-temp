@@ -1,7 +1,8 @@
 // components/admin/add-user-dialog.tsx
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 type AddUserDialogProps = {
   open: boolean;
@@ -25,6 +27,7 @@ type AddUserDialogProps = {
 };
 
 export function AddUserDialog({ open, setOpenAction }: AddUserDialogProps) {
+  const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -34,18 +37,23 @@ export function AddUserDialog({ open, setOpenAction }: AddUserDialogProps) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!form.name || !form.email) return;
+    try {
+      if (!form.name || !form.email) return;
 
-    setLoading(true);
+      setLoading(true);
 
-    await fetch("/api/admin/users", {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
+      await fetch("/api/users", {
+        method: "POST",
+        body: JSON.stringify(form),
+      });
 
-    setLoading(false);
-    setOpenAction(false);
-    location.reload();
+      setLoading(false);
+      setOpenAction(false);
+      toast.success("User added successfully");
+      router.refresh();
+    } catch (error) {
+      toast.error((error as Error)?.message || "Failed to add user");
+    }
   };
 
   return (

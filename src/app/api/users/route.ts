@@ -56,27 +56,4 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function PATCH(req: NextRequest) {
-  try {
-    await serverAuth();
-    const { email, role } = await req.json();
-    if (!role || !email) {
-      return NextResponse.json(
-        { error: "Role and email are required" },
-        { status: 400 },
-      );
-    }
 
-    const updatedUser = await prisma.user.update({
-      where: { email },
-      data: { role },
-    });
-
-    return NextResponse.json(updatedUser);
-  } catch (error) {
-    return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 500 },
-    );
-  }
-}

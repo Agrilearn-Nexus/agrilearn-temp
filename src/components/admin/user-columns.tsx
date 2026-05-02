@@ -28,13 +28,17 @@ export const columns: ColumnDef<User>[] = [
         <Select
           defaultValue={user.role}
           onValueChange={async (value) => {
-            await fetch(`/api/admin/users/${user.id}`, {
+            const res = await fetch(`/api/users/${user.id}`, {
               method: "PATCH",
-              body: JSON.stringify({ role: value, email: user.email }),
-            })
-              .catch((e) => toast.error(e.message))
-              .then(() => toast.success("Role updated successfully"))
-              .finally(() => location.reload());
+              body: JSON.stringify({ role: value }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+              toast.error(data.error || "Failed to update role");
+              return;
+            }
+            toast.success("Role updated successfully");
+            location.reload();
           }}
         >
           <SelectTrigger className="w-30">
@@ -58,15 +62,17 @@ export const columns: ColumnDef<User>[] = [
           variant="destructive"
           size="sm"
           onClick={async () => {
-            (
-              await fetch(`/api/admin/users/${user.id}`, {
-                method: "DELETE",
-              })
-            )
-              .arrayBuffer()
-              .then(() => toast.success("User deleted successfully"))
-              .catch((e) => toast.error(e.message))
-              .finally(() => location.reload());
+            const res = await fetch(`/api/users/${user.id}`, {
+              method: "DELETE",
+            });
+            if (!res.ok) {
+              console.log("not ok");
+              toast.error((await res.json()).error || "Failed to delete user");
+              return;
+            } else {
+              toast.success("User deleted successfully");
+              location.reload();
+            }
           }}
         >
           Delete

@@ -9,6 +9,7 @@ import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import PageLayout from "@/components/PageLayout";
 import React from "react";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -34,6 +35,11 @@ export default async function RootLayout({
       <body
         className={`${inter.className} w-full min-h-screen flex flex-col font-sans relative`}
       >
+        <Toaster
+          position="top-right"
+          duration={3000}
+          closeButton
+          richColors />
         <FloatingWhatsApp />
 
         <Navbar session={session} user={session?.user} />
