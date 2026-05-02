@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import { toast } from "sonner";
 export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "name",
@@ -30,8 +31,10 @@ export const columns: ColumnDef<User>[] = [
             await fetch(`/api/admin/users/${user.id}`, {
               method: "PATCH",
               body: JSON.stringify({ role: value, email: user.email }),
-            });
-            location.reload();
+            })
+              .catch((e) => toast.error(e.message))
+              .then(() => toast.success("Role updated successfully"))
+              .finally(() => location.reload());
           }}
         >
           <SelectTrigger className="w-30">
@@ -55,10 +58,15 @@ export const columns: ColumnDef<User>[] = [
           variant="destructive"
           size="sm"
           onClick={async () => {
-            await fetch(`/api/admin/users/${user.id}`, {
-              method: "DELETE",
-            });
-            location.reload();
+            (
+              await fetch(`/api/admin/users/${user.id}`, {
+                method: "DELETE",
+              })
+            )
+              .arrayBuffer()
+              .then(() => toast.success("User deleted successfully"))
+              .catch((e) => toast.error(e.message))
+              .finally(() => location.reload());
           }}
         >
           Delete
