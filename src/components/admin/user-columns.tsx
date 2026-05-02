@@ -29,9 +29,9 @@ export const columns: ColumnDef<User>[] = [
           onValueChange={async (value) => {
             await fetch(`/api/admin/users/${user.id}`, {
               method: "PATCH",
-              body: JSON.stringify({ role: value }),
+              body: JSON.stringify({ role: value, email: user.email }),
             });
-            location.reload(); // replace with better state later
+            location.reload();
           }}
         >
           <SelectTrigger className="w-30">
