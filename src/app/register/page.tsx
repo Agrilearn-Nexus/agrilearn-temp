@@ -1,10 +1,12 @@
 "use client";
-
+type ApiError = {
+  message?: string;
+};
 import React, { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -82,12 +84,15 @@ const RegisterPage = () => {
       }
     } catch (error: unknown) {
       console.error("Submission Error:", error);
-      toast.error(
-        (error as AxiosError)?.response?.data?.message ||
-          (error as Error)?.message ||
-          "Failed to submit form",
-        { id: toastId },
-      );
+      let errorMessage = "Failed to Submit Form";
+
+      if (axios.isAxiosError<ApiError>(error)) {
+        errorMessage =
+          error.response?.data.message || error.message || errorMessage;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage, { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
