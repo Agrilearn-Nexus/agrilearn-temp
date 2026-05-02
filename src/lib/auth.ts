@@ -22,7 +22,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider !== "google") return false;
       if (!user?.email) return false;
+      const existingUser = await prisma.user.findUnique({
+        where: { email: user.email },
+        include: { accounts: true },
+      });
 
+      if (existingUser) {
+        const alreadyLinked = existingUser.accounts.some(
+          (acc) => acc.provider === "google",
+        );
+
+        if (!alreadyLinked && account) {
+          await prisma.account.create({
+            data: {
+              userId: existingUser.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              access_token: account.access_token ?? null,
+              token_type: account.token_type ?? null,
+              scope: account.scope ?? null,
+              id_token: account.id_token ?? null,
+            },
+          });
+        }
+      }
       return true;
     },
 
