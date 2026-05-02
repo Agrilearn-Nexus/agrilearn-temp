@@ -179,7 +179,7 @@ const Navbar = ({ user }: NavbarProps) => {
 
           {/* AUTH BUTTONS */}
           <div className="flex items-center gap-4">
-            {user ? (
+            {user?.role === "ADMIN" ? (
               <>
                 <UserDropdown handleSignOutAction={handleSignOut} user={user} />
               </>
@@ -282,34 +282,66 @@ const Navbar = ({ user }: NavbarProps) => {
         </div>
 
         {/* MOBILE AUTH LINKS */}
-        <div className="mt-8 w-full max-w-sm mx-auto flex flex-col gap-4">
+        <div className="mt-10 w-full max-w-sm mx-auto flex flex-col gap-4">
           {user ? (
             <>
-              <Link
-                href="/admin/dashboard"
-                onClick={() => setIsOpen(false)}
-                className="text-center text-lg font-medium px-5 py-3 border border-white/30 rounded-xl text-white hover:bg-white hover:text-[#0a2f1c] transition-all"
-              >
-                Dashboard
-              </Link>
+              {/* User Info */}
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 border border-white/10">
+                <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white font-semibold">
+                  {user.name?.[0] || "U"}
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-white font-medium text-sm truncate">
+                    {user.name}
+                  </span>
+                  <span className="text-gray-400 text-xs truncate">
+                    {user.email}
+                  </span>
+                </div>
+              </div>
+
+              {/* Role-based navigation */}
+              {user.role === "ADMIN" && (
+                <Link
+                  href="/admin/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="text-center text-base font-medium px-5 py-3 rounded-xl border border-[#E8BA30]/40 text-[#E8BA30] hover:bg-[#E8BA30] hover:text-[#0a2f1c] transition-all"
+                >
+                  Go to Dashboard
+                </Link>
+              )}
+
+              {/* Logout */}
               <button
                 onClick={() => {
                   setIsOpen(false);
                   handleSignOut();
                 }}
-                className="cursor-pointer text-center text-lg font-medium px-5 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all"
+                className="w-full text-center text-base font-medium px-5 py-3 rounded-xl bg-red-600/90 text-white hover:bg-red-700 transition-all"
               >
                 Logout
               </button>
             </>
           ) : (
-            <Link
-              href="/register"
-              onClick={() => setIsOpen(false)}
-              className="text-center text-lg px-5 py-3 bg-[#E8BA30] text-[#0a2f1c] rounded-xl hover:bg-white transition-all font-bold"
-            >
-              Register Now
-            </Link>
+            <>
+              {/* Login */}
+              <Link
+                href="/auth/login"
+                onClick={() => setIsOpen(false)}
+                className="text-center text-base font-medium px-5 py-3 rounded-xl border border-white/30 text-white hover:bg-white hover:text-[#0a2f1c] transition-all"
+              >
+                Login
+              </Link>
+
+              {/* Register */}
+              <Link
+                href="/register"
+                onClick={() => setIsOpen(false)}
+                className="text-center text-base font-semibold px-5 py-3 rounded-xl bg-[#E8BA30] text-[#0a2f1c] hover:bg-white transition-all"
+              >
+                Register
+              </Link>
+            </>
           )}
         </div>
       </div>
