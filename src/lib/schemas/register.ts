@@ -73,6 +73,7 @@ export const submissionSchema = baseSchema.extend({
   whatsappGroupJoined: z.literal(true, {
     message: "You must join the WhatsApp group",
   }),
+  programName: z.string().optional(),
 });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;

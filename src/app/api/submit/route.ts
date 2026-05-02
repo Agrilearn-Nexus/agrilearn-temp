@@ -9,7 +9,6 @@ import { Prisma } from "@/.generated/client";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log(`body: `, body);
     const { paymentReceipt: paymentReceiptKey, ...submissionData } = body;
 
     const referenceSource = submissionData.referenceSource;
@@ -106,6 +105,7 @@ export async function POST(req: Request) {
         paymentReceiptKey,
         submissionData,
         paymentData,
+        programName: submissionData.programName,
       },
     });
 

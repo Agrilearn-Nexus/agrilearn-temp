@@ -102,6 +102,7 @@ export const persistSubmission = inngest.createFunction(
         name: record.name,
         humanId: record.submissionId,
         certificateType: submissionData.feeDetails,
+        programName: submissionData.programName,
       },
     });
 
