@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useReducer, useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
@@ -17,13 +17,64 @@ import {
 } from "lucide-react";
 import { SubmissionDetailsModal } from "./SubmissionDetailsModal";
 import { deleteSubmission, resendSubmissionEmail } from "@/actions/admin";
+import DeletePreview from "./DeletePreview";
 
+type State = {
+  deleteTarget: string | null;
+  deleteTargetEmail: string | null;
+  pendingId: string | null;
+  pendingAction: "resend" | "delete" | null;
+};
+
+type Action =
+  | { type: "OPEN_DELETE"; id: string; email: string }
+  | { type: "CANCEL_DELETE" }
+  | { type: "CONFIRM_DELETE" }
+  | { type: "START_RESEND"; id: string }
+  | { type: "DONE" };
+const initialState: State = {
+  deleteTarget: null,
+  deleteTargetEmail: null,
+  pendingId: null,
+  pendingAction: null,
+};
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "OPEN_DELETE":
+      return {
+        ...state,
+        deleteTarget: action.id,
+        deleteTargetEmail: action.email,
+      };
+    case "CANCEL_DELETE":
+      return { ...state, deleteTarget: null };
+    case "CONFIRM_DELETE":
+      return {
+        deleteTarget: null,
+        deleteTargetEmail: state.deleteTargetEmail,
+        pendingId: state.deleteTarget,
+        pendingAction: "delete",
+      };
+    case "START_RESEND":
+      return {
+        ...state,
+        pendingId: action.id,
+        pendingAction: "resend",
+      };
+    case "DONE":
+      return initialState;
+  }
+}
 export function SubmissionTable({ data }: { data: any[] }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [optimisticData, setOptimistic] = useOptimistic(data);
+
+  const isPending = (id: string, action: "resend" | "delete") =>
+    state.pendingId === id && state.pendingAction === action;
   const [searchTerm, setSearchTerm] = useState("");
   const [sourceFilter, setSourceFilter] = useState("ALL");
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
-  const [pendingId, setPendingId] = useState<string | null>(null);
-  const filteredData = data.filter((item) => {
+  const filteredData = optimisticData.filter((item) => {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
       item.name?.toLowerCase().includes(term) ||
@@ -279,15 +330,15 @@ export function SubmissionTable({ data }: { data: any[] }) {
                     {(row.status !== "COMPLETED" || row.failureReason) && (
                       <button
                         onClick={async () => {
-                          setPendingId(row.id);
-                          await resendSubmissionEmail(pendingId as string);
-                          setPendingId(null);
+                          dispatch({ type: "START_RESEND", id: row.id });
+                          await resendSubmissionEmail(row.id);
+                          dispatch({ type: "DONE" });
                         }}
-                        disabled={pendingId === row.id}
+                        disabled={isPending(row.id, "resend")}
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all disabled:opacity-50"
                         title="Resend Confirmation Email"
                       >
-                        {pendingId === row.id ? (
+                        {isPending(row.id, "resend") ? (
                           <Loader2 className="size-5 animate-spin" />
                         ) : (
                           <Send className="size-5" />
@@ -303,14 +354,16 @@ export function SubmissionTable({ data }: { data: any[] }) {
                     </button>
 
                     <button
-                      onClick={async () => {
-                        setPendingId(row.id);
-                        await deleteSubmission(pendingId as string);
-                        setPendingId(null);
-                      }}
+                      onClick={() =>
+                        dispatch({
+                          type: "OPEN_DELETE",
+                          id: row.id,
+                          email: row.email,
+                        })
+                      }
                       className="p-2 rounded-lg transition-all"
                     >
-                      {pendingId === row.id ? (
+                      {isPending(row.id, "delete") ? (
                         <Loader2 className="size-5 animate-spin" />
                       ) : (
                         <Trash2 className="size-5 hover:text-rose-700" />
@@ -333,6 +386,19 @@ export function SubmissionTable({ data }: { data: any[] }) {
         submission={selectedSubmission}
         isOpen={!!selectedSubmission}
         onClose={() => setSelectedSubmission(null)}
+      />
+      <DeletePreview
+        open={!!state.deleteTarget}
+        email={state.deleteTargetEmail}
+        isDeleting={isPending(state.deleteTarget!, "delete")}
+        onCancel={() => dispatch({ type: "CANCEL_DELETE" })}
+        onConfirm={async () => {
+          const id = state.deleteTarget!;
+          dispatch({ type: "CONFIRM_DELETE" });
+          setOptimistic((prev) => prev.filter((item) => item.id !== id));
+          await deleteSubmission(id);
+          dispatch({ type: "DONE" });
+        }}
       />
     </>
   );
