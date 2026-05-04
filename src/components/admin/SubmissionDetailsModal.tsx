@@ -36,7 +36,7 @@ export function SubmissionDetailsModal({submission, isOpen, onClose}: ModalProps
 
     return (
 
-        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-[#0a2f1c]/70 backdrop-blur-sm">
+        <div className="fixed inset-0 z-9999 overflow-y-auto bg-[#0a2f1c]/70 backdrop-blur-sm">
 
 
             <div className="flex min-h-full items-start justify-center p-4 pt-24 pb-24 md:p-6 md:pt-28"
@@ -57,7 +57,7 @@ export function SubmissionDetailsModal({submission, isOpen, onClose}: ModalProps
 
                         {/* Image */}
                         <div
-                            className="relative aspect-[3/4] w-full bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden group hover:border-green-400 transition-colors shrink-0">
+                            className="relative aspect-3/4 w-full bg-white rounded-xl border-2 border-dashed border-gray-200 overflow-hidden group hover:border-green-400 transition-colors shrink-0">
                             {submission.payment?.UpiImageUrl ? (
                                 <a href={submission.payment.UpiImageUrl} target="_blank" rel="noreferrer"
                                    className="block h-full w-full">
@@ -210,7 +210,7 @@ function InfoBox({label, value, className = ""}: { label: string, value: string,
     return (
         <div className={`bg-gray-50 p-3 rounded-lg border border-gray-100 ${className}`}>
             <label className="block text-[10px] text-gray-400 uppercase font-semibold mb-1">{label}</label>
-            <p className="text-sm font-medium text-gray-900 break-words">{value || "N/A"}</p>
+            <p className="text-sm font-medium text-gray-900 wrap-break-words">{value || "N/A"}</p>
         </div>
     )
 }
