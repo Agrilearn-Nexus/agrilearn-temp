@@ -127,5 +127,14 @@ jobs:
             docker compose pull
             docker compose up -d --force-recreate
 
+            # wait for app + inngest to be ready
+            until curl -s http://localhost:3000/api/inngest > /dev/null; do
+              echo "Waiting for app..."
+              sleep 2
+            done
+
+            # optional debug (recommended)
+            docker compose ps
+
             # Cleanup old images to save space
             docker image prune -f
