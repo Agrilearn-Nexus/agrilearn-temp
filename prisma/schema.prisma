@@ -8,17 +8,19 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  name          String?
-  email         String?   @unique
-  password      String?
-  createdAt     DateTime  @default(now())
-  emailVerified DateTime?
-  image         String?
-  updatedAt     DateTime  @updatedAt
-  role          Role      @default(USER)
-  accounts      Account[]
-  sessions      Session[]
+  id                  String        @id @default(uuid())
+  name                String?
+  email               String?       @unique
+  password            String?
+  createdAt           DateTime      @default(now())
+  emailVerified       DateTime?
+  image               String?
+  updatedAt           DateTime      @updatedAt
+  role                Role          @default(USER)
+  accounts            Account[]
+  sessions            Session[]
+  deletedSubmissions  Submissions[] @relation("SubmissionDeleter")
+  reviewedSubmissions Submissions[] @relation("SubmissionReviewer")
 }
 
 model Account {
@@ -81,6 +83,16 @@ model Submissions {
   errorLogs             ErrorLog[]
   payment               Payment?
   submissionReference   SubmissionReference @relation(fields: [submissionReferenceId], references: [id])
+
+  isDeleted Boolean @default(false)
+
+  deletedAt DateTime?
+  deletedBy String?
+  deleter   User?     @relation("SubmissionDeleter", fields: [deletedBy], references: [id])
+
+  reviewedAt DateTime?
+  reviewedBy String?
+  reviewer   User?     @relation("SubmissionReviewer", fields: [reviewedBy], references: [id])
 
   @@index([submissionReferenceId])
 }
@@ -170,6 +182,9 @@ enum SubmissionStatus {
   COMPLETED
   FAILED
   PAYMENT_VERIFIED
+  APPROVED
+  REJECTED
+  ARCHIVED
 }
 
 enum ContactRole {
