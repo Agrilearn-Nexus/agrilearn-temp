@@ -29,8 +29,6 @@ export async function deleteSubmission(id: string) {
 
       if (!submission) throw new Error("Submission not found");
 
-      const referenceId = submission.submissionReferenceId;
-
       await tx.submissions.update({
         where: { id },
         data: {
@@ -44,18 +42,6 @@ export async function deleteSubmission(id: string) {
           status: "ARCHIVED",
         },
       });
-
-      const count = await tx.submissions.count({
-        where: { submissionReferenceId: referenceId, isDeleted: false },
-      });
-
-      if (count === 0) {
-        await tx.submissionReference.delete({
-          where: {
-            id: referenceId,
-          },
-        });
-      }
     });
 
     revalidatePath("/admin/dashboard");
@@ -194,6 +180,7 @@ export async function unarchiveSubmission(id: string) {
       },
       data: {
         status: "COMPLETED",
+        isDeleted: false,
         reviewedAt: new Date(),
         reviewer: {
           connect: {

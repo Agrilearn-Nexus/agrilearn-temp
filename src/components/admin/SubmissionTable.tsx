@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimistic, useReducer, useState } from "react";
+import { useOptimistic, useReducer, useState, useTransition } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
@@ -12,21 +12,30 @@ import {
   Eye,
   Filter,
   Loader2,
+  ArchiveRestore,
   Search,
   Send,
   Trash2,
 } from "lucide-react";
 import { SubmissionDetailsModal } from "./SubmissionDetailsModal";
-import { deleteSubmission, resendSubmissionEmail } from "@/actions/admin";
+import {
+  deleteSubmission,
+  resendSubmissionEmail,
+  unarchiveSubmission,
+} from "@/actions/admin";
 import DeletePreview from "./DeletePreview";
 import Link from "next/link";
 import { RefreshButton } from "./refresh-button";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type Mode = "active" | "archived";
 
 type State = {
   deleteTarget: string | null;
   deleteTargetEmail: string | null;
   pendingId: string | null;
-  pendingAction: "resend" | "delete" | null;
+  pendingAction: "resend" | "delete" | "archive" | "unarchive" | null;
 };
 
 type Action =
@@ -34,13 +43,19 @@ type Action =
   | { type: "CANCEL_DELETE" }
   | { type: "CONFIRM_DELETE" }
   | { type: "START_RESEND"; id: string }
+  | { type: "START_ARCHIVE"; id: string }
+  | { type: "START_UNARCHIVE"; id: string }
   | { type: "DONE" };
+
+// ─── Reducer ──────────────────────────────────────────────────────────────────
+
 const initialState: State = {
   deleteTarget: null,
   deleteTargetEmail: null,
   pendingId: null,
   pendingAction: null,
 };
+
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "OPEN_DELETE":
@@ -50,7 +65,7 @@ function reducer(state: State, action: Action): State {
         deleteTargetEmail: action.email,
       };
     case "CANCEL_DELETE":
-      return { ...state, deleteTarget: null };
+      return { ...state, deleteTarget: null, deleteTargetEmail: null };
     case "CONFIRM_DELETE":
       return {
         deleteTarget: null,
@@ -59,25 +74,37 @@ function reducer(state: State, action: Action): State {
         pendingAction: "delete",
       };
     case "START_RESEND":
-      return {
-        ...state,
-        pendingId: action.id,
-        pendingAction: "resend",
-      };
+      return { ...state, pendingId: action.id, pendingAction: "resend" };
+    case "START_ARCHIVE":
+      return { ...state, pendingId: action.id, pendingAction: "archive" };
+    case "START_UNARCHIVE":
+      return { ...state, pendingId: action.id, pendingAction: "unarchive" };
     case "DONE":
       return initialState;
   }
 }
-export function SubmissionTable({ data }: { data: any[] }) {
-  console.log("data", data);
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function SubmissionTable({
+  data,
+  mode = "active",
+}: {
+  data: any[];
+  mode?: Mode;
+}) {
+  const [, startTransition] = useTransition();
   const [state, dispatch] = useReducer(reducer, initialState);
   const [optimisticData, setOptimistic] = useOptimistic(data);
-
-  const isPending = (id: string, action: "resend" | "delete") =>
-    state.pendingId === id && state.pendingAction === action;
   const [searchTerm, setSearchTerm] = useState("");
   const [sourceFilter, setSourceFilter] = useState("ALL");
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
+
+  const isPending = (
+    id: string,
+    action: "resend" | "delete" | "archive" | "unarchive",
+  ) => state.pendingId === id && state.pendingAction === action;
+
   const filteredData = optimisticData.filter((item) => {
     const term = searchTerm.toLowerCase();
     const matchesSearch =
@@ -85,12 +112,12 @@ export function SubmissionTable({ data }: { data: any[] }) {
       item.email?.toLowerCase().includes(term) ||
       item.phone?.includes(term);
     const matchesSource =
-      sourceFilter === "ALL" ||
-      item.submissionRefference?.type === sourceFilter;
+      sourceFilter === "ALL" || item.submissionReference?.type === sourceFilter;
     return matchesSearch && matchesSource;
   });
 
-  // Export Logic
+  // ─── Export ───────────────────────────────────────────────────────────────
+
   const handleExport = () => {
     const excelData = filteredData.map((item) => ({
       "Submission ID": item.id,
@@ -101,7 +128,6 @@ export function SubmissionTable({ data }: { data: any[] }) {
       Designation: item.currentDesignation,
       "Institute/College": item.institute,
       "University/Organization": item.organization,
-
       Address: item.address,
       City: item.city,
       District: item.district,
@@ -114,10 +140,8 @@ export function SubmissionTable({ data }: { data: any[] }) {
         : "N/A",
       "UPI ID": item.payment?.upiId || "N/A",
       "Receipt URL": item.payment?.UpiImageUrl || "N/A",
-
       "Reference Source": item.submissionReference?.type,
       "Referred By": item.submissionReference?.personName || "N/A",
-
       "Registration Date": new Date(item.createdAt).toLocaleString(),
     }));
     const worksheet = XLSX.utils.json_to_sheet(excelData);
@@ -129,9 +153,11 @@ export function SubmissionTable({ data }: { data: any[] }) {
     });
     saveAs(
       new Blob([excelBuffer], { type: "application/octet-stream" }),
-      "AgriLearn_Data.xlsx",
+      `AgriLearn_${mode === "archived" ? "Archived" : "Data"}.xlsx`,
     );
   };
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
 
   const getInitials = (name: string) =>
     name
@@ -165,8 +191,13 @@ export function SubmissionTable({ data }: { data: any[] }) {
             <Clock className="w-3 h-3" /> PROCESSING
           </span>
         );
+      case "ARCHIVED":
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-2 rounded-full text-[10px] font-bold bg-gray-100 text-gray-600">
+            <Archive className="w-3 h-3" /> ARCHIVED
+          </span>
+        );
       case "SAVED":
-        // Saved means DB is good, but Email might have failed (if reason exists) or hasn't sent yet
         if (reason)
           return (
             <span
@@ -186,12 +217,13 @@ export function SubmissionTable({ data }: { data: any[] }) {
     }
   };
 
+  // ─── Render ───────────────────────────────────────────────────────────────
+
   return (
     <>
       {/* TOOLBAR */}
       <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row gap-4 justify-between items-center bg-white sticky top-0 z-20">
         <div className="flex gap-3 w-full sm:w-auto">
-          {/* Search */}
           <div className="relative w-full sm:w-72 group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-600 transition-colors w-4 h-4" />
             <input
@@ -202,8 +234,6 @@ export function SubmissionTable({ data }: { data: any[] }) {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-
-          {/* Filter */}
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3 h-3" />
             <select
@@ -219,20 +249,34 @@ export function SubmissionTable({ data }: { data: any[] }) {
           </div>
         </div>
 
-        <div className="flex gap-4 flex-row">
+        <div className="flex gap-3 flex-row">
           <button
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2.5 bg-[#0a2f1c] hover:bg-[#14422b] text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
           >
-            <Download className="w-4 h-4" /> <span>Export CSV</span>
+            <Download className="w-4 h-4" />
+            <span>Export</span>
           </button>
-          <Link
-            href="/admin/dashboard/archived"
-            className="flex items-center gap-2 px-4 py-2.5 border text-sm font-medium rounded-lg transition-all hover:bg-gray-50"
-          >
-            <Archive className="size-4" />
-            <span>Archived</span>
-          </Link>
+
+          {/* toggle between active and archived */}
+          {mode === "active" ? (
+            <Link
+              href="/admin/dashboard/archived"
+              className="flex items-center gap-2 px-4 py-2.5 border text-sm font-medium rounded-lg transition-all hover:bg-gray-50"
+            >
+              <Archive className="size-4" />
+              <span>Archived</span>
+            </Link>
+          ) : (
+            <Link
+              href="/admin/dashboard"
+              className="flex items-center gap-2 px-4 py-2.5 border text-sm font-medium rounded-lg transition-all hover:bg-gray-50"
+            >
+              <ArchiveRestore className="size-4" />
+              <span>Active</span>
+            </Link>
+          )}
+
           <RefreshButton />
         </div>
       </div>
@@ -292,9 +336,9 @@ export function SubmissionTable({ data }: { data: any[] }) {
                 <td className="px-6 py-4">
                   <span
                     className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${
-                      row.submissionRefference?.type === "WHATSAPP_GROUP"
+                      row.submissionReference?.type === "WHATSAPP_GROUP"
                         ? "bg-green-100 text-green-700"
-                        : row.submissionRefference?.type === "WEBSITE"
+                        : row.submissionReference?.type === "WEBSITE"
                           ? "bg-blue-100 text-blue-700"
                           : "bg-purple-100 text-purple-700"
                     }`}
@@ -306,13 +350,12 @@ export function SubmissionTable({ data }: { data: any[] }) {
                   </span>
                 </td>
 
-                {/* selected plan */}
+                {/* Selected Plan */}
                 <td className="px-6 py-4">
                   <div className="flex flex-col gap-1 max-w-65">
                     <span className="text-sm font-semibold text-gray-800 line-clamp-1">
                       {row.submissionDetail?.split("– ₹")[0] || "N/A"}
                     </span>
-
                     {row.submissionDetail?.includes("₹") && (
                       <span className="text-xs font-medium text-green-600">
                         ₹{row.submissionDetail.split("₹")[1]}
@@ -322,7 +365,6 @@ export function SubmissionTable({ data }: { data: any[] }) {
                 </td>
 
                 {/* Status */}
-
                 <td className="px-6 py-4">
                   <div className="flex flex-col gap-1">
                     {getStatusBadge(row.status, row.failureReason)}
@@ -337,51 +379,84 @@ export function SubmissionTable({ data }: { data: any[] }) {
                   </div>
                 </td>
 
-                {/* Action */}
+                {/* Actions */}
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-1">
-                    {/* Manual Resend Email Button (Only show if not completed or if there is an error) */}
-                    {(row.status !== "COMPLETED" || row.failureReason) && (
+                    {mode === "active" && (
+                      <>
+                        {/* Resend — only for non-completed or errored */}
+                        {(row.status !== "COMPLETED" || row.failureReason) && (
+                          <button
+                            onClick={async () => {
+                              dispatch({ type: "START_RESEND", id: row.id });
+                              await resendSubmissionEmail(row.id);
+                              dispatch({ type: "DONE" });
+                            }}
+                            disabled={isPending(row.id, "resend")}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all disabled:opacity-50"
+                            title="Resend Confirmation Email"
+                          >
+                            {isPending(row.id, "resend") ? (
+                              <Loader2 className="size-5 animate-spin" />
+                            ) : (
+                              <Send className="size-5" />
+                            )}
+                          </button>
+                        )}
+
+                        {/* Delete */}
+                        <button
+                          onClick={() =>
+                            dispatch({
+                              type: "OPEN_DELETE",
+                              id: row.id,
+                              email: row.email,
+                            })
+                          }
+                          className="p-2 rounded-lg transition-all"
+                          title="Delete Submission"
+                        >
+                          {isPending(row.id, "delete") ? (
+                            <Loader2 className="size-5 animate-spin" />
+                          ) : (
+                            <Trash2 className="size-5 hover:text-rose-700" />
+                          )}
+                        </button>
+                      </>
+                    )}
+
+                    {mode === "archived" && (
+                      /* Unarchive / Restore */
                       <button
                         onClick={async () => {
-                          dispatch({ type: "START_RESEND", id: row.id });
-                          await resendSubmissionEmail(row.id);
+                          dispatch({ type: "START_UNARCHIVE", id: row.id });
+                          startTransition(() => {
+                            setOptimistic((prev) =>
+                              prev.filter((i) => i.id !== row.id),
+                            );
+                          });
+                          await unarchiveSubmission(row.id);
                           dispatch({ type: "DONE" });
                         }}
-                        disabled={isPending(row.id, "resend")}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all disabled:opacity-50"
-                        title="Resend Confirmation Email"
+                        disabled={isPending(row.id, "unarchive")}
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-all disabled:opacity-50"
+                        title="Restore Submission"
                       >
-                        {isPending(row.id, "resend") ? (
+                        {isPending(row.id, "unarchive") ? (
                           <Loader2 className="size-5 animate-spin" />
                         ) : (
-                          <Send className="size-5" />
+                          <ArchiveRestore className="size-5" />
                         )}
                       </button>
                     )}
 
+                    {/* View — always visible */}
                     <button
                       onClick={() => setSelectedSubmission(row)}
                       className="p-2 rounded-lg transition-all"
+                      title="View Details"
                     >
                       <Eye className="size-5 hover:text-[#0a2f1c]" />
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        dispatch({
-                          type: "OPEN_DELETE",
-                          id: row.id,
-                          email: row.email,
-                        })
-                      }
-                      className="p-2 rounded-lg transition-all"
-                    >
-                      {isPending(row.id, "delete") ? (
-                        <Loader2 className="size-5 animate-spin" />
-                      ) : (
-                        <Trash2 className="size-5 hover:text-rose-700" />
-                      )}
                     </button>
                   </div>
                 </td>
@@ -389,9 +464,12 @@ export function SubmissionTable({ data }: { data: any[] }) {
             ))}
           </tbody>
         </table>
+
         {filteredData.length === 0 && (
           <div className="p-10 text-center text-gray-400 text-sm">
-            No students found matching your filters.
+            {mode === "archived"
+              ? "No archived submissions found."
+              : "No students found matching your filters."}
           </div>
         )}
       </div>
@@ -401,19 +479,25 @@ export function SubmissionTable({ data }: { data: any[] }) {
         isOpen={!!selectedSubmission}
         onClose={() => setSelectedSubmission(null)}
       />
-      <DeletePreview
-        open={!!state.deleteTarget}
-        email={state.deleteTargetEmail}
-        isDeleting={isPending(state.deleteTarget!, "delete")}
-        onCancel={() => dispatch({ type: "CANCEL_DELETE" })}
-        onConfirm={async () => {
-          const id = state.deleteTarget!;
-          dispatch({ type: "CONFIRM_DELETE" });
-          setOptimistic((prev) => prev.filter((item) => item.id !== id));
-          await deleteSubmission(id);
-          dispatch({ type: "DONE" });
-        }}
-      />
+
+      {/* Delete dialog — active mode only */}
+      {mode === "active" && (
+        <DeletePreview
+          open={!!state.deleteTarget}
+          email={state.deleteTargetEmail}
+          isDeleting={isPending(state.deleteTarget!, "delete")}
+          onCancel={() => dispatch({ type: "CANCEL_DELETE" })}
+          onConfirm={async () => {
+            const id = state.deleteTarget!;
+            dispatch({ type: "CONFIRM_DELETE" });
+            startTransition(() => {
+              setOptimistic((prev) => prev.filter((item) => item.id !== id));
+            });
+            await deleteSubmission(id);
+            dispatch({ type: "DONE" });
+          }}
+        />
+      )}
     </>
   );
 }
