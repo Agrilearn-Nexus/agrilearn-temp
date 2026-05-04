@@ -5,6 +5,7 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import {
   AlertCircle,
+  Archive,
   CheckCircle,
   Clock,
   Download,
@@ -18,6 +19,8 @@ import {
 import { SubmissionDetailsModal } from "./SubmissionDetailsModal";
 import { deleteSubmission, resendSubmissionEmail } from "@/actions/admin";
 import DeletePreview from "./DeletePreview";
+import Link from "next/link";
+import { RefreshButton } from "./refresh-button";
 
 type State = {
   deleteTarget: string | null;
@@ -216,12 +219,22 @@ export function SubmissionTable({ data }: { data: any[] }) {
           </div>
         </div>
 
-        <button
-          onClick={handleExport}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#0a2f1c] hover:bg-[#14422b] text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
-        >
-          <Download className="w-4 h-4" /> <span>Export CSV</span>
-        </button>
+        <div className="flex gap-4 flex-row">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#0a2f1c] hover:bg-[#14422b] text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
+          >
+            <Download className="w-4 h-4" /> <span>Export CSV</span>
+          </button>
+          <Link
+            href="/admin/dashboard/archived"
+            className="flex items-center gap-2 px-4 py-2.5 border text-sm font-medium rounded-lg transition-all hover:bg-gray-50"
+          >
+            <Archive className="size-4" />
+            <span>Archived</span>
+          </Link>
+          <RefreshButton />
+        </div>
       </div>
 
       {/* TABLE */}
