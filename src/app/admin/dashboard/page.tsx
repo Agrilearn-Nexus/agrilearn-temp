@@ -86,9 +86,6 @@ export default async function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <SubmissionTable data={submissions} />
         </div>
-        <div className="grid grid-cols-1 gap-8">
-          <CleanupLogTable />
-        </div>
       </div>
     </div>
   );
