@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { SubmissionTable } from "@/components/admin/SubmissionTable";
 import { School, TrendingUp, UserPlus, Users } from "lucide-react";
-import CleanupLogTable from "@/components/admin/CleanupLogTable";
 export default async function AdminDashboard() {
   const session = await auth();
   if (!session?.user) redirect("/auth/login");

@@ -288,9 +288,9 @@ export function SubmissionTable({ data }: { data: any[] }) {
                         title="Resend Confirmation Email"
                       >
                         {pendingId === row.id ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <Loader2 className="size-5 animate-spin" />
                         ) : (
-                          <Send className="w-5 h-5" />
+                          <Send className="size-5" />
                         )}
                       </button>
                     )}
@@ -299,7 +299,7 @@ export function SubmissionTable({ data }: { data: any[] }) {
                       onClick={() => setSelectedSubmission(row)}
                       className="p-2 rounded-lg transition-all"
                     >
-                      <Eye className="w-5 h-5 hover:text-[#0a2f1c]" />
+                      <Eye className="size-5 hover:text-[#0a2f1c]" />
                     </button>
 
                     <button
@@ -310,7 +310,11 @@ export function SubmissionTable({ data }: { data: any[] }) {
                       }}
                       className="p-2 rounded-lg transition-all"
                     >
-                      <Trash2 className="w-5 h-5 hover:text-rose-700" />
+                      {pendingId === row.id ? (
+                        <Loader2 className="size-5 animate-spin" />
+                      ) : (
+                        <Trash2 className="size-5 hover:text-rose-700" />
+                      )}
                     </button>
                   </div>
                 </td>
