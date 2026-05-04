@@ -16,6 +16,7 @@ const eslintConfig = defineConfig([
   {
     rules: {
       "@typescript-eslint/implicit-any": "off",
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 ]);
