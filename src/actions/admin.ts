@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { fileDelete } from "@/utils/operations";
 import { sendEmail } from "@/lib/mailer";
 import SubmissionSuccessEmail from "@/emails/SubmissionSuccessEmail";
 import { SubmissionStatus } from "@/.generated/enums";
@@ -14,9 +13,14 @@ import {
   ObjectIdentifier,
 } from "@aws-sdk/client-s3";
 import { bucketName, r2 } from "@/lib/r2";
+import { auth } from "@/lib/auth";
 
 export async function deleteSubmission(id: string) {
   try {
+    const user = await auth();
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
     await prisma.$transaction(async (tx) => {
       const submission = await tx.submissions.findUnique({
         where: { id },
@@ -26,12 +30,23 @@ export async function deleteSubmission(id: string) {
       if (!submission) throw new Error("Submission not found");
 
       const referenceId = submission.submissionReferenceId;
-      const receiptKey = submission.payment?.upiImageId;
 
-      await tx.submissions.delete({ where: { id } });
+      await tx.submissions.update({
+        where: { id },
+        data: {
+          isDeleted: true,
+          deletedAt: new Date(),
+          deleter: {
+            connect: {
+              id: user?.user.id,
+            },
+          },
+          status: "ARCHIVED",
+        },
+      });
 
       const count = await tx.submissions.count({
-        where: { submissionReferenceId: referenceId },
+        where: { submissionReferenceId: referenceId, isDeleted: false },
       });
 
       if (count === 0) {
@@ -40,10 +55,6 @@ export async function deleteSubmission(id: string) {
             id: referenceId,
           },
         });
-      }
-
-      if (receiptKey) {
-        await fileDelete({ key: receiptKey });
       }
     });
 
@@ -86,7 +97,10 @@ export async function resendSubmissionEmail(submissionId: string) {
     revalidatePath("/admin/dashboard");
     return { success: true };
   } catch (err) {
-    return { success: false, error: "Failed to resend email" };
+    return {
+      success: false,
+      error: (err as Error).message || "Failed to resend email",
+    };
   }
 }
 
@@ -159,5 +173,39 @@ export async function deleteOrphanedFiles(keys: string[]) {
   } catch (error) {
     console.error("Delete Error:", error);
     return { success: false, error: "Failed to delete files" };
+  }
+}
+
+export async function unarchiveSubmission(id: string) {
+  try {
+    const session = await auth();
+    if (!session) {
+      throw new Error(`Unauthorized`);
+    }
+
+    if (session.user.role !== "ADMIN") {
+      throw new Error(`Fordbidden`);
+    }
+
+    await prisma.submissions.update({
+      where: {
+        id,
+        status: "ARCHIVED",
+      },
+      data: {
+        status: "COMPLETED",
+        reviewedAt: new Date(),
+        reviewer: {
+          connect: {
+            id: session.user.id,
+          },
+        },
+      },
+    });
+    revalidatePath("/admin/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to unarchive:", error);
+    return { success: false, error: "Failed to unarchive submission" };
   }
 }

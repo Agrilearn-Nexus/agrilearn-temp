@@ -9,6 +9,9 @@ export default async function AdminDashboard() {
   if (!session?.user) redirect("/auth/login");
 
   const submissions = await prisma.submissions.findMany({
+    where: {
+      isDeleted: false,
+    },
     orderBy: { createdAt: "desc" },
     include: { payment: true, submissionReference: true },
   });

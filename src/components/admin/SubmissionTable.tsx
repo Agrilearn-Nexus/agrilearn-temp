@@ -66,6 +66,7 @@ function reducer(state: State, action: Action): State {
   }
 }
 export function SubmissionTable({ data }: { data: any[] }) {
+  console.log("data", data);
   const [state, dispatch] = useReducer(reducer, initialState);
   const [optimisticData, setOptimistic] = useOptimistic(data);
 
