@@ -62,7 +62,7 @@ services:
     image: inngest/inngest:latest
     container_name: agrilearn_inngest
     restart: unless-stopped
-    command: inngest start
+    command: inngest start --config /inngest.json --no-dev
     ports:
       - "8288:8288"
       - "8289:8289" # websocket gateway
@@ -79,6 +79,13 @@ services:
       - INNGEST_SERVE_HOST
       - INNGEST_SERVE_PATH
 
+    volumes:
+      - ./inngest.json:/inngest.json
+      - inngest_data:/var/lib/inngest
+
 networks:
   default:
     driver: bridge
+
+volumes:
+  inngest_data:
