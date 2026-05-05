@@ -1,8 +1,0 @@
-{
-  "apps": [
-    {
-      "id": "registraion-system",
-      "url": "http://app:3000/api/inngest"
-    }
-  ]
-}

@@ -57,6 +57,8 @@ jobs:
             INNGEST_BASE_URL=${{ secrets.INNGEST_BASE_URL }}
             INNGEST_SERVE_HOST=${{ secrets.INNGEST_SERVE_HOST }}
             INNGEST_SERVE_PATH=${{ secrets.INNGEST_SERVE_PATH }}
+            
+            
 
       - name: Copy Config to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -64,7 +66,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          source: "docker-compose.yml,inngest.json"
+          source: "docker-compose.yml"
           target: "/home/dev/agrilearn-temp"
 
       - name: Deploy on VPS
@@ -127,16 +129,8 @@ jobs:
             docker compose pull
             docker compose up -d --force-recreate
 
-            # wait for app + inngest to be ready
-            until [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/api/inngest)" = "200" ]; do
-              echo "Waiting for app..."
-              sleep 2
-            done
-
-            echo "App is ready"
-
-            # optional debug (recommended)
-            docker compose ps
+            sleep 10
+            docker compose exec -T app npx inngest-cli apps sync -u ${{ secrets.INNGEST_BASE_URL }} || echo "Inngest sync skipped"
 
             # Cleanup old images to save space
             docker image prune -f

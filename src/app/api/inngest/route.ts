@@ -6,4 +6,7 @@ import { orphanFileCleanUp } from "@/inngest/functions/cleanup/orphanCleanup";
 export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [...submissionFunction, orphanFileCleanUp],
+  streaming: "allow",
+  serveHost: process.env.INNGEST_SERVE_HOST,
+  servePath: process.env.INNGEST_SERVE_PATH,
 });
