@@ -13,6 +13,7 @@ import {
   LogOut,
   Trash2,
   Users,
+  MessageSquare,
 } from "lucide-react";
 import { Session } from "next-auth";
 import { Avatar, AvatarBadge, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -395,6 +396,13 @@ export function UserDropdown({
             <Link href="/admin/dashboard" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
               Dashboard
+            </Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link href="/admin/contacts" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Messages
             </Link>
           </DropdownMenuItem>
 
