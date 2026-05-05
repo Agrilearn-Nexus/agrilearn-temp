@@ -9,4 +9,5 @@ export const { GET, POST, PUT } = serve({
   streaming: "allow",
   serveHost: process.env.INNGEST_SERVE_HOST,
   servePath: process.env.INNGEST_SERVE_PATH,
+  signingKey: process.env.INNGEST_SIGNING_KEY,
 });
