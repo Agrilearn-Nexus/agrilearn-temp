@@ -2,27 +2,11 @@ services:
   app:
     container_name: agrilearn_app
     image: ghcr.io/agrilearn-nexus/agrilearn-temp/app:latest
-    #    build:
-    #      context: .
-    #      args:
-    #        DATABASE_URL: $DATABASE_URL
-    #        NEXTAUTH_URL: $NEXTAUTH_URL
-    #        GOOGLE_CLIENT_ID: $GOOGLE_CLIENT_ID
-    #        NEXT_PUBLIC_GOOGLE_CLIENT_ID: $NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    #        target: production
-    #        R2_ENDPOINT: $R2_ENDPOINT
-    #        R2_ACCESS_KEY_ID: $R2_ACCESS_KEY_ID
-    #        R2_SECRET_ACCESS_KEY: $R2_SECRET_ACCESS_KEY
-    #        R2_BUCKET_NAME: $R2_BUCKET_NAME
-    #        R2_PUBLIC_BASE_URL: $R2_PUBLIC_BASE_URL
-    #        INNGEST_EVENT_KEY: $INNGEST_EVENT_KEY
-    #        INNGEST_SIGNING_KEY: $INNGEST_SIGNING_KEY
-    #        INNGEST_BASE_URL: $INNGEST_BASE_URL
 
     restart: always
 
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
 
     env_file:
       - .env
@@ -62,10 +46,13 @@ services:
     image: inngest/inngest:latest
     container_name: agrilearn_inngest
     restart: unless-stopped
-    command: inngest start
+    command: >
+      inngest start
+      --sdk-url http://app:3000/api/inngest
+      --poll-interval 60
     ports:
-      - "8288:8288"
-      - "8289:8289" # websocket gateway
+      - "127.0.0.1:8288:8288"
+      - "127.0.0.1:8289:8289"
 
     env_file:
       - .env
