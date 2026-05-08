@@ -50,6 +50,10 @@ services:
       inngest start
       --sdk-url http://app:3000/api/inngest
       --poll-interval 60
+      --sqlite-dir /data
+
+    volumes:
+      - inngest_data:/data
     ports:
       - "127.0.0.1:8288:8288"
       - "127.0.0.1:8289:8289"
@@ -69,3 +73,6 @@ services:
 networks:
   default:
     driver: bridge
+
+volumes:
+  inngest_data:
