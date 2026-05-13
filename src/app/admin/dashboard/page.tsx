@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { SubmissionTable } from "@/components/admin/SubmissionTable";
-import { School, UserPlus, Users } from "lucide-react";
+import { DollarSign, School, UserPlus, Users } from "lucide-react";
 import { StatCard } from "@/components/admin/StatsCard";
 export default async function AdminDashboard() {
   const session = await auth();
@@ -15,6 +15,17 @@ export default async function AdminDashboard() {
     orderBy: { createdAt: "desc" },
     include: { payment: true, submissionReference: true },
   });
+
+  const totalRevenue = submissions.reduce((sum, s) => {
+    const validStatuses = [
+      "SAVED",
+      "COMPLETED",
+      "PAYMENT_VERIFIED",
+      "APPROVED",
+    ];
+    if (s.isDeleted || !validStatuses.includes(s.status)) return sum;
+    return sum + (s.payment?.amountPaid ?? 0);
+  }, 0);
 
   const totalStudents = submissions.length;
   const oneDayAgo = new Date();
@@ -61,7 +72,7 @@ export default async function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-6 md:px-10 -mt-12 space-y-8 relative z-10 pb-20">
         {/* STATS CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <StatCard
             label="Total Registrations"
             value={totalStudents}
@@ -82,6 +93,13 @@ export default async function AdminDashboard() {
             icon={<School className="w-5 h-5 text-purple-600" />}
             trend="Expanding Coverage"
             color="border-l-4 border-purple-500"
+          />
+          <StatCard
+            label="Total Revenue"
+            value={`₹${totalRevenue}`}
+            icon={<DollarSign className="w-5 h-5 text-yellow-600" />}
+            trend="Growing"
+            color="border-l-4 border-yellow-500"
           />
         </div>
 
